@@ -38,5 +38,4 @@ def logout():
         return redirect(url_for("admin.dashboard"))
 
     session.clear()
-    flash("Sesion cerrada.", "success")
     return redirect(url_for("public.home"))

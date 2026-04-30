@@ -244,8 +244,12 @@ function applyTheme(theme) {
         );
     });
 
-    document.querySelectorAll("[data-theme-icon]").forEach((label) => {
-        label.textContent = nextTheme === "dark" ? "Claro" : "Oscuro";
+    document.querySelectorAll("[data-theme-icon-dark]").forEach((icon) => {
+        icon.hidden = nextTheme === "dark";
+    });
+
+    document.querySelectorAll("[data-theme-icon-light]").forEach((icon) => {
+        icon.hidden = nextTheme !== "dark";
     });
 }
 

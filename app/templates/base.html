@@ -19,7 +19,7 @@
 </head>
 <body data-page="{{ page_name|default('site') }}" data-whatsapp-number="5491141875759">
     <div class="site-shell">
-        <header class="topbar">
+        <header class="topbar{% if page_name == 'catalog' %} topbar--catalog{% endif %}">
             <a class="brand" href="{{ url_for('public.home') }}" aria-label="Ir al inicio">
                 <img class="brand__logo" src="{{ url_for('static', filename='img/toti-logo.jpg') }}" alt="Toti Camisetas">
                 <div class="brand__copy">
@@ -28,26 +28,41 @@
                 </div>
             </a>
 
+            {% if page_name == "catalog" %}
+                <label class="search-box search-box--header" for="catalog-search">
+                    <span class="sr-only">Buscar</span>
+                    <span class="search-box__icon ui-icon icon--search" aria-hidden="true"></span>
+                    <input id="catalog-search" type="search" placeholder="Modelo, categoría o talle">
+                </label>
+            {% endif %}
+
             <div class="topbar__actions">
                 <nav class="topbar__nav">
                     <a class="nav-link" href="{{ url_for('public.home') }}">Catalogo</a>
                     {% if is_admin_logged_in %}
-                        <a class="nav-link" href="{{ url_for('admin.dashboard') }}">Panel admin</a>
+                        <a class="nav-link nav-link--with-icon" href="{{ url_for('admin.dashboard') }}">
+                            <span class="ui-icon icon--admin" aria-hidden="true"></span>
+                            <span>Admin</span>
+                        </a>
                         <form method="post" action="{{ url_for('auth.logout') }}" class="inline-form">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <button class="nav-button nav-button--ghost" type="submit">Salir</button>
                         </form>
                     {% else %}
-                        <a class="nav-link nav-link--strong" href="{{ url_for('auth.login') }}">Admin</a>
+                        <a class="nav-link nav-link--strong nav-link--with-icon" href="{{ url_for('auth.login') }}">
+                            <span class="ui-icon icon--admin" aria-hidden="true"></span>
+                            <span>Admin</span>
+                        </a>
                     {% endif %}
                 </nav>
 
                 <div class="topbar__tools">
                     <button class="icon-button" type="button" data-theme-toggle aria-label="Cambiar modo de color">
-                        <span data-theme-icon>Tema</span>
+                        <span class="ui-icon icon--moon" data-theme-icon-dark aria-hidden="true"></span>
+                        <span class="ui-icon icon--sun" data-theme-icon-light aria-hidden="true" hidden></span>
                     </button>
                     <button class="icon-button icon-button--cart" type="button" data-cart-toggle aria-label="Abrir carrito">
-                        <span>Carrito</span>
+                        <span class="ui-icon icon--cart" aria-hidden="true"></span>
                         <strong class="cart-counter" data-cart-count>0</strong>
                     </button>
                 </div>
@@ -69,6 +84,16 @@
         {% block content %}{% endblock %}
     </div>
 
+    <a
+        class="floating-whatsapp"
+        href="https://wa.me/5491141875759?text=Hola%20Toti%2C%20quiero%20hacer%20una%20consulta."
+        target="_blank"
+        rel="noreferrer"
+        aria-label="Escribir por WhatsApp"
+    >
+        <span class="ui-icon icon--whatsapp" aria-hidden="true"></span>
+    </a>
+
     <div class="cart-layer" data-cart-layer hidden>
         <button class="cart-layer__backdrop" type="button" data-cart-close aria-label="Cerrar carrito"></button>
         <aside class="cart-drawer" aria-label="Carrito">
@@ -77,7 +102,9 @@
                     <p class="eyebrow">Tu carrito</p>
                     <h2>Preparar pedido</h2>
                 </div>
-                <button class="icon-button" type="button" data-cart-close aria-label="Cerrar carrito">✕</button>
+                <button class="icon-button" type="button" data-cart-close aria-label="Cerrar carrito">
+                    <span class="ui-icon icon--close" aria-hidden="true"></span>
+                </button>
             </div>
 
             <div class="cart-drawer__body">

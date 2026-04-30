@@ -4,7 +4,7 @@
 
 {% block content %}
 <main class="page-grid">
-    <section class="hero-card hero-card--store">
+    <section class="hero-card hero-card--store{% if not is_admin_logged_in %} hero-card--single{% endif %}">
         <div class="hero-card__copy">
             <p class="eyebrow">Toti Camisetas</p>
             <h1>Elegi tu camiseta y cerralo por WhatsApp</h1>
@@ -17,35 +17,44 @@
             </div>
         </div>
 
-        <aside class="hero-panel">
-            <div class="hero-stats">
-                <article class="hero-stat">
-                    <span>Modelos</span>
-                    <strong>{{ stats.models }}</strong>
-                </article>
-                <article class="hero-stat">
-                    <span>Unidades</span>
-                    <strong>{{ stats.units }}</strong>
-                </article>
-                <article class="hero-stat">
-                    <span>Con video</span>
-                    <strong>{{ stats.with_video }}</strong>
-                </article>
-                <article class="hero-stat">
-                    <span>Sin foto</span>
-                    <strong>{{ stats.without_photo }}</strong>
-                </article>
-            </div>
-        </aside>
+        {% if is_admin_logged_in %}
+            <aside class="hero-panel">
+                <div class="hero-panel__header">
+                    <p class="eyebrow">Resumen admin</p>
+                    <h2>Estado del catálogo</h2>
+                </div>
+                <div class="hero-stats hero-stats--admin">
+                    <article class="hero-stat">
+                        <span>Modelos</span>
+                        <strong>{{ stats.models }}</strong>
+                    </article>
+                    <article class="hero-stat">
+                        <span>Unidades</span>
+                        <strong>{{ stats.units }}</strong>
+                    </article>
+                    <article class="hero-stat">
+                        <span>Con video</span>
+                        <strong>{{ stats.with_video }}</strong>
+                    </article>
+                    <article class="hero-stat">
+                        <span>Sin video</span>
+                        <strong>{{ stats.without_video }}</strong>
+                    </article>
+                    <article class="hero-stat">
+                        <span>Con foto</span>
+                        <strong>{{ stats.with_photo }}</strong>
+                    </article>
+                    <article class="hero-stat">
+                        <span>Sin foto</span>
+                        <strong>{{ stats.without_photo }}</strong>
+                    </article>
+                </div>
+            </aside>
+        {% endif %}
     </section>
 
     <section class="panel panel--catalog" id="catalogo">
         <div class="catalog-toolbar">
-            <label class="search-box" for="catalog-search">
-                <span>Buscar</span>
-                <input id="catalog-search" type="search" placeholder="Modelo, categoria o talle">
-            </label>
-
             <div class="filter-row" id="catalog-filters">
                 {% for filter_name in filters %}
                     <button class="filter-button{% if loop.first %} is-active{% endif %}" type="button" data-filter="{{ filter_name }}">

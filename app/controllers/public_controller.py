@@ -12,6 +12,8 @@ def _build_catalog_stats(products):
         "models": len(products),
         "units": sum(product["total_stock"] for product in products),
         "with_video": sum(1 for product in products if product["video_count"] > 0),
+        "without_video": sum(1 for product in products if product["video_count"] == 0),
+        "with_photo": sum(1 for product in products if product["image_count"] > 0),
         "without_photo": sum(1 for product in products if product["image_count"] == 0),
     }
 
