@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Solicitud invalida{% endblock %}
+
+{% block content %}
+<main class="center-layout">
+    <section class="auth-card">
+        <p class="eyebrow">Error 400</p>
+        <h1>Solicitud invalida</h1>
+        <p>La operacion no pudo completarse porque el formulario o la sesion ya no eran validos.</p>
+        <a class="button button--primary button--block" href="{{ url_for('public.home') }}">Volver al catalogo</a>
+    </section>
+</main>
+{% endblock %}

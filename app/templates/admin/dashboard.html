@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Panel admin{% endblock %}
+
+{% block content %}
+<main class="page-grid">
+    <section class="panel">
+        <div class="panel__header">
+            <div>
+                <p class="eyebrow">Panel admin</p>
+                <h1>Editar stock de camisetas</h1>
+            </div>
+            <p class="panel__note">Cada guardado actualiza la base de datos SQLite sin tocar el frontend publico.</p>
+        </div>
+
+        <div class="admin-grid">
+            {% for product in products %}
+                <article class="admin-card" id="product-{{ product.id }}" style="--card-accent: {{ product.accent }}">
+                    <div class="admin-card__head">
+                        <div>
+                            <p class="admin-card__category">{{ product.category }}</p>
+                            <h2>{{ product.name }}</h2>
+                            <p>{{ product.description }}</p>
+                        </div>
+                        <div class="admin-card__summary">
+                            <span>{{ product.total_stock }} unidades</span>
+                            <a class="nav-link" href="{{ url_for('public.product_detail', slug=product.slug) }}" target="_blank" rel="noreferrer">Ver publica</a>
+                        </div>
+                    </div>
+
+                    <form class="admin-form" method="post" action="{{ url_for('admin.update_stock', product_id=product.id) }}" data-admin-form>
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                        <div class="admin-size-grid">
+                            {% for size in product.sizes %}
+                                <label class="field">
+                                    <span>Talle {{ size.label }}</span>
+                                    <input type="number" min="0" step="1" name="size_{{ size.id }}" value="{{ size.quantity }}" required>
+                                </label>
+                            {% endfor %}
+                        </div>
+
+                        <div class="admin-form__actions">
+                            <button class="button button--primary" type="submit" data-submit-label>Guardar stock</button>
+                        </div>
+                    </form>
+                </article>
+            {% endfor %}
+        </div>
+    </section>
+</main>
+{% endblock %}
+
+{% block page_scripts %}
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}

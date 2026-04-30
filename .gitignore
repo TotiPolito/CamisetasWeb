@@ -1,0 +1,8 @@
+.DS_Store
+Thumbs.db
+.venv/
+__pycache__/
+*.pyc
+storage/catalog.sqlite3
+storage/media/*
+!storage/media/.gitkeep

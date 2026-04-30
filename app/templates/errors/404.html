@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Pagina no encontrada{% endblock %}
+
+{% block content %}
+<main class="center-layout">
+    <section class="auth-card">
+        <p class="eyebrow">Error 404</p>
+        <h1>Pagina no encontrada</h1>
+        <p>La ruta que abriste no existe o ya no esta disponible.</p>
+        <a class="button button--primary button--block" href="{{ url_for('public.home') }}">Volver al catalogo</a>
+    </section>
+</main>
+{% endblock %}

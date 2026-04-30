@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}Catalogo de Camisetas{% endblock %}
+
+{% block content %}
+<main class="page-grid">
+    <section class="hero-card">
+        <div class="hero-card__copy">
+            <p class="eyebrow">Catalogo actualizado</p>
+            <h1>Camisetas listas para mostrar y vender</h1>
+            <p class="hero-card__text">
+                Tus clientes entran sin loguearse, ven el catalogo completo y revisan el stock actualizado.
+                El contenido visual se sirve desde el backend para no dejar archivos directos expuestos.
+            </p>
+            <div class="hero-card__actions">
+                <a class="button button--primary" href="#catalogo">Ver catalogo</a>
+                <a class="button button--secondary" href="#seguridad">Ver seguridad</a>
+            </div>
+        </div>
+
+        <aside class="hero-panel">
+            <h2>Resumen</h2>
+            <div class="hero-stats">
+                <article class="hero-stat">
+                    <span>Modelos</span>
+                    <strong>{{ stats.models }}</strong>
+                </article>
+                <article class="hero-stat">
+                    <span>Unidades</span>
+                    <strong>{{ stats.units }}</strong>
+                </article>
+                <article class="hero-stat">
+                    <span>Con video</span>
+                    <strong>{{ stats.with_video }}</strong>
+                </article>
+                <article class="hero-stat">
+                    <span>Sin foto</span>
+                    <strong>{{ stats.without_photo }}</strong>
+                </article>
+            </div>
+            <p class="hero-panel__note">
+                Nino Dibu se muestra solo con video. Inter Miami sigue listado sin foto por ahora.
+            </p>
+        </aside>
+    </section>
+
+    <section class="panel" id="catalogo">
+        <div class="panel__header">
+            <div>
+                <p class="eyebrow">Catalogo</p>
+                <h2>Elegi una camiseta y mira el detalle</h2>
+            </div>
+
+            <label class="search-box" for="catalog-search">
+                <span>Buscar</span>
+                <input id="catalog-search" type="search" placeholder="Modelo, categoria o talle">
+            </label>
+        </div>
+
+        <div class="filter-row" id="catalog-filters">
+            {% for filter_name in filters %}
+                <button class="filter-button{% if loop.first %} is-active{% endif %}" type="button" data-filter="{{ filter_name }}">
+                    {{ filter_name }}
+                </button>
+            {% endfor %}
+        </div>
+
+        <div class="catalog-grid" id="catalog-grid">
+            {% for product in products %}
+                <article
+                    class="product-card"
+                    style="--card-accent: {{ product.accent }}"
+                    data-category="{{ product.category }}"
+                    data-search="{{ product.search_blob }}"
+                >
+                    <div class="product-card__media{% if product.preview_media and product.preview_media.kind == 'video' %} product-card__media--video{% endif %} media-protect" data-protected-media>
+                        {% if product.preview_media %}
+                            {% if product.preview_media.kind == "video" %}
+                                <video class="cover-media" muted loop autoplay playsinline preload="auto">
+                                    <source src="{{ url_for('public.media', token=product.preview_media.token) }}" type="{{ product.preview_media.mime_type }}">
+                                </video>
+                            {% else %}
+                                <img
+                                    class="cover-media"
+                                    src="{{ url_for('public.media', token=product.preview_media.token) }}"
+                                    alt="{{ product.name }}"
+                                    loading="lazy"
+                                >
+                            {% endif %}
+                        {% else %}
+                            <div class="media-placeholder">Contenido visual pendiente</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="product-card__meta">
+                        <span class="badge">{{ product.category }}</span>
+                        <span class="badge badge--stock">{{ product.total_stock }} unidades</span>
+                    </div>
+
+                    <div class="product-card__copy">
+                        <h3>{{ product.name }}</h3>
+                        <p>{{ product.description }}</p>
+                    </div>
+
+                    <div class="product-card__meta product-card__meta--tight">
+                        <span class="badge badge--soft">{{ product.image_count }} foto{% if product.image_count != 1 %}s{% endif %}</span>
+                        <span class="badge badge--video">{{ product.video_count }} video{% if product.video_count != 1 %}s{% endif %}</span>
+                    </div>
+
+                    <div class="size-pills">
+                        {% for size in product.sizes %}
+                            <span class="size-pill{% if size.quantity <= 1 %} size-pill--low{% endif %}">
+                                {{ size.label }} <strong>{{ size.quantity }}</strong>
+                            </span>
+                        {% endfor %}
+                    </div>
+
+                    <div class="product-card__actions">
+                        <a class="button button--primary button--block" href="{{ url_for('public.product_detail', slug=product.slug) }}">
+                            Ver camiseta
+                        </a>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="panel security-panel" id="seguridad">
+        <div class="panel__header">
+            <div>
+                <p class="eyebrow">Proteccion</p>
+                <h2>Contenido servido desde backend</h2>
+            </div>
+        </div>
+        <div class="security-grid">
+            <article class="security-card">
+                <h3>Sin enlaces directos</h3>
+                <p>Las imagenes y videos ya no viven como archivos publicos de la interfaz y se sirven mediante rutas controladas.</p>
+            </article>
+            <article class="security-card">
+                <h3>Visualizacion sin descarga</h3>
+                <p>Se ocultaron los botones de descarga y se deshabilitaron acciones rapidas del navegador donde es posible.</p>
+            </article>
+            <article class="security-card">
+                <h3>Panel privado</h3>
+                <p>Solo el admin autenticado puede entrar al panel y modificar stock. El publico solo navega y consulta.</p>
+            </article>
+        </div>
+    </section>
+</main>
+{% endblock %}

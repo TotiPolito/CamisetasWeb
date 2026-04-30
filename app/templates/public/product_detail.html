@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} | Catalogo{% endblock %}
+
+{% block content %}
+<main class="page-grid">
+    <section class="product-hero">
+        <div class="product-hero__copy">
+            <p class="eyebrow">{{ product.category }} | {{ product.family }}</p>
+            <h1>{{ product.name }}</h1>
+            <p class="product-hero__description">{{ product.description }}</p>
+
+            <div class="product-hero__actions">
+                <a class="button button--primary" href="{{ url_for('public.home') }}">Volver al catalogo</a>
+                {% if is_admin_logged_in %}
+                    <a class="button button--secondary" href="{{ url_for('admin.dashboard') }}#product-{{ product.id }}">Editar stock</a>
+                {% endif %}
+            </div>
+
+            <div class="detail-metrics">
+                <article class="metric-card">
+                    <span>Unidades</span>
+                    <strong>{{ product.total_stock }}</strong>
+                </article>
+                <article class="metric-card">
+                    <span>Fotos</span>
+                    <strong>{{ product.image_count }}</strong>
+                </article>
+                <article class="metric-card">
+                    <span>Videos</span>
+                    <strong>{{ product.video_count }}</strong>
+                </article>
+            </div>
+
+            <section class="stock-panel">
+                <div class="stock-panel__head">
+                    <h2>Talles disponibles</h2>
+                    <p>Stock actualizado desde la base de datos.</p>
+                </div>
+                <div class="size-pills">
+                    {% for size in product.sizes %}
+                        <span class="size-pill{% if size.quantity <= 1 %} size-pill--low{% endif %}">
+                            {{ size.label }} <strong>{{ size.quantity }}</strong>
+                        </span>
+                    {% endfor %}
+                </div>
+            </section>
+        </div>
+
+        <aside class="product-hero__preview{% if product.preview_media and product.preview_media.kind == 'video' %} product-hero__preview--video{% endif %} media-protect" data-protected-media>
+            {% if product.preview_media %}
+                {% if product.preview_media.kind == "video" %}
+                    <video class="cover-media" controls controlsList="nodownload noplaybackrate noremoteplayback" disablePictureInPicture playsinline preload="auto">
+                        <source src="{{ url_for('public.media', token=product.preview_media.token) }}" type="{{ product.preview_media.mime_type }}">
+                    </video>
+                {% else %}
+                    <img
+                        class="cover-media"
+                        src="{{ url_for('public.media', token=product.preview_media.token) }}"
+                        alt="{{ product.name }}"
+                    >
+                {% endif %}
+            {% else %}
+                <div class="media-placeholder media-placeholder--large">Contenido visual pendiente</div>
+            {% endif %}
+        </aside>
+    </section>
+
+    {% if product.videos %}
+        <section class="panel">
+            <div class="panel__header">
+                <div>
+                    <p class="eyebrow">Videos</p>
+                    <h2>Videos del modelo</h2>
+                </div>
+                <p class="panel__note">Se reproducen dentro de la web y no muestran botones de descarga.</p>
+            </div>
+
+            <div class="media-grid media-grid--video">
+                {% for media in product.videos %}
+                    <article class="media-card media-card--video media-protect" data-protected-media>
+                        <div class="media-card__frame">
+                            <video class="cover-media" controls controlsList="nodownload noplaybackrate noremoteplayback" disablePictureInPicture playsinline preload="auto">
+                                <source src="{{ url_for('public.media', token=media.token) }}" type="{{ media.mime_type }}">
+                            </video>
+                        </div>
+                        <div class="media-card__body">
+                            <h3>{{ media.label }}</h3>
+                            <p>Vista en movimiento del modelo {{ product.name }}.</p>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+
+    <section class="panel">
+        <div class="panel__header">
+            <div>
+                <p class="eyebrow">Fotos</p>
+                <h2>Galeria del modelo</h2>
+            </div>
+            <p class="panel__note">Las fotos se muestran dentro de la web sin exponer enlaces directos al archivo original.</p>
+        </div>
+
+        {% if product.images %}
+            <div class="media-grid media-grid--photo">
+                {% for media in product.images %}
+                    <article class="media-card media-protect" data-protected-media>
+                        <div class="media-card__frame">
+                            <img
+                                class="cover-media"
+                                src="{{ url_for('public.media', token=media.token) }}"
+                                alt="{{ product.name }} - {{ media.label }}"
+                                loading="lazy"
+                            >
+                        </div>
+                        <div class="media-card__body">
+                            <h3>{{ media.label }}</h3>
+                            <p>Detalle visual del modelo {{ product.name }}.</p>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <article class="empty-state-card">
+                <h3>Sin fotos disponibles</h3>
+                <p>Este modelo se muestra sin fotos por ahora. El stock sigue activo y se puede editar desde el panel admin.</p>
+            </article>
+        {% endif %}
+    </section>
+</main>
+{% endblock %}
