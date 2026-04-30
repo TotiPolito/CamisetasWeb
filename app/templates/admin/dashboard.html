@@ -10,7 +10,6 @@
                 <p class="eyebrow">Panel admin</p>
                 <h1>Editar stock de camisetas</h1>
             </div>
-            <p class="panel__note">Cada guardado actualiza la base de datos SQLite sin tocar el frontend publico.</p>
         </div>
 
         <div class="admin-grid">
@@ -32,10 +31,10 @@
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
                         <div class="admin-size-grid">
-                            {% for size in product.sizes %}
+                            {% for size in product.display_sizes %}
                                 <label class="field">
                                     <span>Talle {{ size.label }}</span>
-                                    <input type="number" min="0" step="1" name="size_{{ size.id }}" value="{{ size.quantity }}" required>
+                                    <input type="number" min="0" step="1" name="size_{{ size.field_key }}" value="{{ size.quantity }}" required>
                                 </label>
                             {% endfor %}
                         </div>

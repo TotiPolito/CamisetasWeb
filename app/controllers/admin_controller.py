@@ -27,8 +27,8 @@ def update_stock(product_id):
 
     updates = {}
 
-    for size in product["sizes"]:
-        field_name = f"size_{size['id']}"
+    for size in product["display_sizes"]:
+        field_name = f"size_{size['field_key']}"
         raw_value = request.form.get(field_name, str(size["quantity"])).strip()
 
         if not raw_value.isdigit():
@@ -36,7 +36,10 @@ def update_stock(product_id):
             return redirect(url_for("admin.dashboard") + f"#product-{product_id}")
 
         quantity = int(raw_value)
-        updates[size["id"]] = quantity
+        updates[size["label"]] = {
+            "quantity": quantity,
+            "sort_order": size["sort_order"],
+        }
 
     update_product_stock(product_id, updates)
     flash(f"Stock actualizado para {product['name']}.", "success")

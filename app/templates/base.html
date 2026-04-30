@@ -1,35 +1,57 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Catalogo de camisetas con panel admin, stock editable y contenido servido desde backend.">
+    <meta name="description" content="Catalogo de camisetas con stock por talle y pedidos por WhatsApp.">
     <title>{% block title %}Catalogo de Camisetas{% endblock %}</title>
+    <script>
+        (function () {
+            const storedTheme = localStorage.getItem("toti-theme");
+            const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+            document.documentElement.dataset.theme = storedTheme || systemTheme;
+        })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
 </head>
-<body data-page="{{ page_name|default('site') }}">
+<body data-page="{{ page_name|default('site') }}" data-whatsapp-number="5491141875759">
     <div class="site-shell">
         <header class="topbar">
-            <a class="brand" href="{{ url_for('public.home') }}">
-                <span class="brand__mark">ARG</span>
-                <span class="brand__text">Catalogo Camisetas</span>
+            <a class="brand" href="{{ url_for('public.home') }}" aria-label="Ir al inicio">
+                <img class="brand__logo" src="{{ url_for('static', filename='img/toti-logo.jpg') }}" alt="Toti Camisetas">
+                <div class="brand__copy">
+                    <span class="brand__title">Toti Camisetas</span>
+                    <span class="brand__subtitle">Catalogo online</span>
+                </div>
             </a>
 
-            <nav class="topbar__nav">
-                <a class="nav-link" href="{{ url_for('public.home') }}">Catalogo</a>
-                {% if is_admin_logged_in %}
-                    <a class="nav-link" href="{{ url_for('admin.dashboard') }}">Panel admin</a>
-                    <form method="post" action="{{ url_for('auth.logout') }}" class="inline-form">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <button class="nav-button" type="submit">Salir</button>
-                    </form>
-                {% else %}
-                    <a class="nav-link nav-link--strong" href="{{ url_for('auth.login') }}">Admin</a>
-                {% endif %}
-            </nav>
+            <div class="topbar__actions">
+                <nav class="topbar__nav">
+                    <a class="nav-link" href="{{ url_for('public.home') }}">Catalogo</a>
+                    {% if is_admin_logged_in %}
+                        <a class="nav-link" href="{{ url_for('admin.dashboard') }}">Panel admin</a>
+                        <form method="post" action="{{ url_for('auth.logout') }}" class="inline-form">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button class="nav-button nav-button--ghost" type="submit">Salir</button>
+                        </form>
+                    {% else %}
+                        <a class="nav-link nav-link--strong" href="{{ url_for('auth.login') }}">Admin</a>
+                    {% endif %}
+                </nav>
+
+                <div class="topbar__tools">
+                    <button class="icon-button" type="button" data-theme-toggle aria-label="Cambiar modo de color">
+                        <span data-theme-icon>Tema</span>
+                    </button>
+                    <button class="icon-button icon-button--cart" type="button" data-cart-toggle aria-label="Abrir carrito">
+                        <span>Carrito</span>
+                        <strong class="cart-counter" data-cart-count>0</strong>
+                    </button>
+                </div>
+            </div>
         </header>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -45,6 +67,32 @@
         {% endwith %}
 
         {% block content %}{% endblock %}
+    </div>
+
+    <div class="cart-layer" data-cart-layer hidden>
+        <button class="cart-layer__backdrop" type="button" data-cart-close aria-label="Cerrar carrito"></button>
+        <aside class="cart-drawer" aria-label="Carrito">
+            <div class="cart-drawer__header">
+                <div>
+                    <p class="eyebrow">Tu carrito</p>
+                    <h2>Preparar pedido</h2>
+                </div>
+                <button class="icon-button" type="button" data-cart-close aria-label="Cerrar carrito">✕</button>
+            </div>
+
+            <div class="cart-drawer__body">
+                <article class="empty-cart" data-cart-empty>
+                    <h3>Tu carrito esta vacio</h3>
+                    <p>Elegi una camiseta, selecciona el talle y agregala para seguir por WhatsApp.</p>
+                </article>
+                <div class="cart-items" data-cart-items></div>
+            </div>
+
+            <div class="cart-drawer__footer">
+                <p class="cart-note">Finaliza tu pedido por WhatsApp.</p>
+                <a class="button button--primary button--block" href="#" target="_blank" rel="noreferrer" data-cart-whatsapp>Continuar por WhatsApp</a>
+            </div>
+        </aside>
     </div>
 
     <script src="{{ url_for('static', filename='js/site.js') }}"></script>
