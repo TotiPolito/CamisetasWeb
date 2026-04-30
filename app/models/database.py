@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS admins (
 CREATE TABLE IF NOT EXISTS products (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     slug TEXT NOT NULL UNIQUE,
+    sku TEXT UNIQUE,
     name TEXT NOT NULL,
     family TEXT NOT NULL,
     category TEXT NOT NULL,
@@ -67,5 +68,18 @@ def initialize_database(app):
 
     with sqlite3.connect(database_path) as connection:
         connection.executescript(SCHEMA)
+        existing_columns = {
+            row[1]
+            for row in connection.execute("PRAGMA table_info(products)").fetchall()
+        }
+        if "sku" not in existing_columns:
+            connection.execute("ALTER TABLE products ADD COLUMN sku TEXT")
+        connection.execute(
+            """
+            CREATE UNIQUE INDEX IF NOT EXISTS idx_products_sku
+            ON products(sku)
+            WHERE sku IS NOT NULL
+            """
+        )
 
     app.teardown_appcontext(close_db)

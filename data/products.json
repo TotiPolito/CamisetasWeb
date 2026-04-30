@@ -2,6 +2,7 @@
   "products": [
     {
       "slug": "dama-titular",
+      "sku": "TOT-DAM-001",
       "name": "Dama Titular",
       "family": "Dama",
       "category": "Dama",
@@ -26,6 +27,7 @@
     },
     {
       "slug": "hombre-titular",
+      "sku": "TOT-HOM-001",
       "name": "Hombre Titular",
       "family": "Hombre",
       "category": "Hombre",
@@ -48,6 +50,7 @@
     },
     {
       "slug": "hombre-suplente",
+      "sku": "TOT-HOM-002",
       "name": "Hombre Suplente",
       "family": "Hombre",
       "category": "Hombre",
@@ -70,6 +73,7 @@
     },
     {
       "slug": "nino-titular",
+      "sku": "TOT-NIN-001",
       "name": "Ni\u00f1o Titular",
       "family": "Ni\u00f1os",
       "category": "Ni\u00f1os",
@@ -93,6 +97,7 @@
     },
     {
       "slug": "nino-suplente",
+      "sku": "TOT-NIN-002",
       "name": "Ni\u00f1o Suplente",
       "family": "Ni\u00f1os",
       "category": "Ni\u00f1os",
@@ -118,6 +123,7 @@
     },
     {
       "slug": "nino-dibu",
+      "sku": "TOT-NIN-003",
       "name": "Ni\u00f1o Dibu",
       "family": "Ni\u00f1os",
       "category": "Ni\u00f1os",
@@ -135,6 +141,7 @@
     },
     {
       "slug": "inter-miami",
+      "sku": "TOT-ESP-001",
       "name": "Inter Miami",
       "family": "Especial",
       "category": "Especial",

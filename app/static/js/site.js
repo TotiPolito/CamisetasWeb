@@ -46,7 +46,7 @@ function buildWhatsAppUrl(items) {
     ];
 
     items.forEach((item, index) => {
-        lines.push(`${index + 1}. ${item.name} | Talle ${item.size} | Cantidad ${item.quantity}`);
+        lines.push(`${index + 1}. ${item.name} | SKU ${item.sku} | Talle ${item.size} | Cantidad ${item.quantity}`);
     });
 
     lines.push("");
@@ -93,7 +93,7 @@ function renderCart() {
         card.innerHTML = `
             <div class="cart-item__copy">
                 <a class="cart-item__title" href="/camiseta/${escapeHtml(item.slug)}">${escapeHtml(item.name)}</a>
-                <p>Talle ${escapeHtml(item.size)}</p>
+                <p>SKU ${escapeHtml(item.sku)} | Talle ${escapeHtml(item.size)}</p>
             </div>
             <div class="cart-item__controls">
                 <div class="quantity-stepper quantity-stepper--small">
@@ -366,6 +366,7 @@ function initProductPurchase() {
             key: `${purchaseRoot.dataset.productId}:${selectedSize.label}`,
             productId: purchaseRoot.dataset.productId,
             slug: purchaseRoot.dataset.productSlug,
+            sku: purchaseRoot.dataset.productSku,
             name: purchaseRoot.dataset.productName,
             size: selectedSize.label,
             quantity,

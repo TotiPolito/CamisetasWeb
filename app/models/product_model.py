@@ -140,6 +140,7 @@ def _serialize_product(row, sizes, media):
     search_terms = " ".join(
         [
             row["name"],
+            row["sku"] or "",
             row["family"],
             row["category"],
             row["description"],
@@ -150,6 +151,7 @@ def _serialize_product(row, sizes, media):
     return {
         "id": row["id"],
         "slug": row["slug"],
+        "sku": row["sku"],
         "name": row["name"],
         "family": row["family"],
         "category": row["category"],
@@ -179,7 +181,7 @@ def fetch_all_products():
     db = get_db()
     rows = db.execute(
         """
-        SELECT id, slug, name, family, category, accent, description, sort_order
+        SELECT id, slug, sku, name, family, category, accent, description, sort_order
         FROM products
         ORDER BY sort_order, id
         """
@@ -191,7 +193,7 @@ def fetch_product_by_slug(slug):
     db = get_db()
     row = db.execute(
         """
-        SELECT id, slug, name, family, category, accent, description, sort_order
+        SELECT id, slug, sku, name, family, category, accent, description, sort_order
         FROM products
         WHERE slug = ?
         """,
@@ -204,7 +206,7 @@ def fetch_product_by_id(product_id):
     db = get_db()
     row = db.execute(
         """
-        SELECT id, slug, name, family, category, accent, description, sort_order
+        SELECT id, slug, sku, name, family, category, accent, description, sort_order
         FROM products
         WHERE id = ?
         """,

@@ -639,6 +639,19 @@ img.cover-media {
     margin: 0;
 }
 
+.product-code {
+    margin: 0;
+    color: var(--success);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.product-code--detail {
+    margin-top: -0.35rem;
+}
+
 .size-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
