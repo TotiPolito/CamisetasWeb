@@ -6,6 +6,8 @@ from app.services.media_service import stream_media
 
 public_bp = Blueprint("public", __name__)
 
+FILTER_ORDER = ["Todos", "Hombre", "Dama", "Niño", "Otros"]
+
 
 def _build_catalog_stats(products):
     return {
@@ -19,14 +21,8 @@ def _build_catalog_stats(products):
 
 
 def _build_filters(products):
-    ordered_categories = []
-
-    for product in products:
-        category = product["category"]
-        if category not in ordered_categories:
-            ordered_categories.append(category)
-
-    return ["Todos", *ordered_categories]
+    product_filters = {product["filter_group"] for product in products}
+    return [filter_name for filter_name in FILTER_ORDER if filter_name == "Todos" or filter_name in product_filters]
 
 
 @public_bp.get("/")

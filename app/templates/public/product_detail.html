@@ -6,25 +6,26 @@
 <main class="page-grid">
     <section class="product-hero">
         <div class="product-hero__copy">
-            <p class="eyebrow">{{ product.category }} | {{ product.family }}</p>
+            <p class="eyebrow">{{ product.category_label }} | {{ product.family }}</p>
             <h1>{{ product.name }}</h1>
             <p class="product-code product-code--detail">SKU {{ product.sku }}</p>
-            <p class="product-hero__description">{{ product.description }}</p>
 
-            <div class="detail-metrics">
-                <article class="metric-card">
-                    <span>Unidades</span>
-                    <strong>{{ product.total_stock }}</strong>
-                </article>
-                <article class="metric-card">
-                    <span>Fotos</span>
-                    <strong>{{ product.image_count }}</strong>
-                </article>
-                <article class="metric-card">
-                    <span>Videos</span>
-                    <strong>{{ product.video_count }}</strong>
-                </article>
-            </div>
+            {% if is_admin_logged_in %}
+                <div class="detail-metrics">
+                    <article class="metric-card">
+                        <span>Unidades</span>
+                        <strong>{{ product.total_stock }}</strong>
+                    </article>
+                    <article class="metric-card">
+                        <span>Fotos</span>
+                        <strong>{{ product.image_count }}</strong>
+                    </article>
+                    <article class="metric-card">
+                        <span>Videos</span>
+                        <strong>{{ product.video_count }}</strong>
+                    </article>
+                </div>
+            {% endif %}
 
             <section
                 class="purchase-panel"
@@ -73,7 +74,7 @@
                 <a class="button button--secondary" href="{{ url_for('public.home') }}">Volver al catalogo</a>
                 <button class="button button--secondary" type="button" data-cart-toggle>Ver carrito</button>
                 {% if is_admin_logged_in %}
-                    <a class="button button--secondary" href="{{ url_for('admin.dashboard') }}#product-{{ product.id }}">Editar stock</a>
+                    <a class="button button--secondary" href="{{ url_for('admin.dashboard') }}#product-{{ product.id }}">Editar producto</a>
                 {% endif %}
             </div>
         </div>
@@ -81,13 +82,13 @@
         <aside class="product-hero__preview{% if product.preview_media and product.preview_media.kind == 'video' %} product-hero__preview--video{% endif %} media-protect" data-protected-media>
             {% if product.preview_media %}
                 {% if product.preview_media.kind == "video" %}
-                    <video class="cover-media" controls controlsList="nodownload noplaybackrate noremoteplayback" disablePictureInPicture playsinline preload="auto">
-                        <source src="{{ url_for('public.media', token=product.preview_media.token) }}" type="{{ product.preview_media.mime_type }}">
+                    <video class="cover-media" controls controlsList="nodownload noplaybackrate noremoteplayback" disablePictureInPicture playsinline preload="metadata">
+                        <source src="{{ url_for('public.media', token=product.preview_media.token) }}">
                     </video>
                 {% else %}
                     <img
                         class="cover-media"
-                        src="{{ url_for('public.media', token=product.preview_media.token) }}"
+                        src="{{ url_for('public.media', token=product.preview_media.token, variant='detail') }}"
                         alt="{{ product.name }}"
                     >
                 {% endif %}
@@ -110,8 +111,8 @@
                 {% for media in product.videos %}
                     <article class="media-card media-card--video media-protect" data-protected-media>
                         <div class="media-card__frame">
-                            <video class="cover-media" controls controlsList="nodownload noplaybackrate noremoteplayback" disablePictureInPicture playsinline preload="auto">
-                                <source src="{{ url_for('public.media', token=media.token) }}" type="{{ media.mime_type }}">
+                            <video class="cover-media" controls controlsList="nodownload noplaybackrate noremoteplayback" disablePictureInPicture playsinline preload="metadata">
+                                <source src="{{ url_for('public.media', token=media.token) }}">
                             </video>
                         </div>
                     </article>
@@ -135,7 +136,7 @@
                         <div class="media-card__frame">
                             <img
                                 class="cover-media"
-                                src="{{ url_for('public.media', token=media.token) }}"
+                                src="{{ url_for('public.media', token=media.token, variant='gallery') }}"
                                 alt="{{ product.name }} - {{ media.label }}"
                                 loading="lazy"
                             >

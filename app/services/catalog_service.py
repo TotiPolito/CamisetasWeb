@@ -11,7 +11,9 @@ SKU_PREFIXES = {
     "Dama": "DAM",
     "Hombre": "HOM",
     "Niños": "NIN",
+    "Niño": "NIN",
     "Especial": "ESP",
+    "Otros": "ESP",
 }
 
 

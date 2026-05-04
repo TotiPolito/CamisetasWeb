@@ -21,7 +21,7 @@
             <aside class="hero-panel">
                 <div class="hero-panel__header">
                     <p class="eyebrow">Resumen admin</p>
-                    <h2>Estado del catálogo</h2>
+                    <h2>Estado del catalogo</h2>
                 </div>
                 <div class="hero-stats hero-stats--admin">
                     <article class="hero-stat">
@@ -69,19 +69,19 @@
                 <article
                     class="product-card"
                     style="--card-accent: {{ product.accent }}"
-                    data-category="{{ product.category }}"
+                    data-category="{{ product.filter_group }}"
                     data-search="{{ product.search_blob }}"
                 >
                     <a class="product-card__media{% if product.preview_media and product.preview_media.kind == 'video' %} product-card__media--video{% endif %} media-protect" data-protected-media href="{{ url_for('public.product_detail', slug=product.slug) }}">
                         {% if product.preview_media %}
                             {% if product.preview_media.kind == "video" %}
-                                <video class="cover-media" muted loop autoplay playsinline preload="auto">
-                                    <source src="{{ url_for('public.media', token=product.preview_media.token) }}" type="{{ product.preview_media.mime_type }}">
+                                <video class="cover-media" muted loop autoplay playsinline preload="metadata">
+                                    <source src="{{ url_for('public.media', token=product.preview_media.token) }}">
                                 </video>
                             {% else %}
                                 <img
                                     class="cover-media"
-                                    src="{{ url_for('public.media', token=product.preview_media.token) }}"
+                                    src="{{ url_for('public.media', token=product.preview_media.token, variant='card') }}"
                                     alt="{{ product.name }}"
                                     loading="lazy"
                                 >
@@ -93,13 +93,12 @@
 
                     <div class="product-card__head">
                         <div class="product-card__meta">
-                            <span class="badge">{{ product.category }}</span>
+                            <span class="badge">{{ product.category_label }}</span>
                             <span class="badge badge--stock">{{ product.total_stock }} disponibles</span>
                         </div>
                         <div class="product-card__copy">
                             <h3>{{ product.name }}</h3>
                             <p class="product-code">SKU {{ product.sku }}</p>
-                            <p>{{ product.description }}</p>
                         </div>
                     </div>
 
@@ -125,6 +124,13 @@
                 </article>
             {% endfor %}
         </div>
+
+        <article class="empty-state-card" id="catalog-empty" hidden>
+            <div>
+                <h3>No encontramos resultados</h3>
+                <p>Prueba con otro talle, nombre o filtro para seguir buscando.</p>
+            </div>
+        </article>
     </section>
 </main>
 {% endblock %}

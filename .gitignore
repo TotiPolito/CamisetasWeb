@@ -6,3 +6,4 @@ __pycache__/
 storage/catalog.sqlite3
 storage/media/*
 !storage/media/.gitkeep
+storage/cache/

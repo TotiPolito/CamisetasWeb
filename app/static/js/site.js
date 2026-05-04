@@ -170,6 +170,7 @@ function initCatalogFilters() {
     const searchInput = document.querySelector("#catalog-search");
     const filterButtons = document.querySelectorAll("[data-filter]");
     const cards = document.querySelectorAll(".product-card[data-category]");
+    const emptyState = document.querySelector("#catalog-empty");
 
     if (!searchInput || cards.length === 0) {
         return;
@@ -179,14 +180,23 @@ function initCatalogFilters() {
 
     function applyFilters() {
         const searchTerm = normalizeText(searchInput.value);
+        let visibleCards = 0;
 
         cards.forEach((card) => {
-            const cardCategory = card.dataset.category || "";
+            const cardCategory = normalizeText(card.dataset.category || "");
             const cardSearch = normalizeText(card.dataset.search || "");
-            const matchesFilter = activeFilter === "Todos" || cardCategory === activeFilter;
+            const matchesFilter = activeFilter === "Todos" || cardCategory === normalizeText(activeFilter);
             const matchesSearch = searchTerm === "" || cardSearch.includes(searchTerm);
-            card.hidden = !(matchesFilter && matchesSearch);
+            const shouldShow = matchesFilter && matchesSearch;
+            card.hidden = !shouldShow;
+            if (shouldShow) {
+                visibleCards += 1;
+            }
         });
+
+        if (emptyState) {
+            emptyState.hidden = visibleCards !== 0;
+        }
     }
 
     filterButtons.forEach((button) => {
@@ -199,6 +209,7 @@ function initCatalogFilters() {
     });
 
     searchInput.addEventListener("input", applyFilters);
+    searchInput.addEventListener("search", applyFilters);
     applyFilters();
 }
 
@@ -216,6 +227,14 @@ function initMediaProtection() {
         media.addEventListener("dragstart", (event) => {
             event.preventDefault();
         });
+    });
+
+    document.querySelectorAll("video[autoplay]").forEach((video) => {
+        video.muted = true;
+        const playAttempt = video.play();
+        if (playAttempt && typeof playAttempt.catch === "function") {
+            playAttempt.catch(() => {});
+        }
     });
 
     document.addEventListener("keydown", (event) => {

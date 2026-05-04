@@ -1,26 +1,72 @@
 import mimetypes
+import re
+import secrets
+import unicodedata
 from pathlib import Path
 
 from flask import current_app
+from werkzeug.utils import secure_filename
 
 from app.models.database import get_db
 
+
+CATEGORY_LABELS = {
+    "Dama": "Dama",
+    "Hombre": "Hombre",
+    "Niños": "Niño",
+    "Niño": "Niño",
+    "Nino": "Niño",
+    "Especial": "Otros",
+    "Otros": "Otros",
+}
 
 SIZE_PROFILES = {
     "Dama": ["S", "M", "L", "XL", "XXL"],
     "Hombre": ["S", "M", "L", "XL", "XXL"],
     "Niños": ["8", "10", "12", "14", "16"],
+    "Niño": ["8", "10", "12", "14", "16"],
+    "Nino": ["8", "10", "12", "14", "16"],
     "Especial": ["S", "M", "L", "XL", "XXL"],
+    "Otros": ["S", "M", "L", "XL", "XXL"],
 }
+
+DEFAULT_ACCENTS = {
+    "Dama": "linear-gradient(135deg, #79a9dc, #c8def7)",
+    "Hombre": "linear-gradient(135deg, #8da6de, #d9e2ff)",
+    "Niños": "linear-gradient(135deg, #f6d364, #fff4b1)",
+    "Niño": "linear-gradient(135deg, #f6d364, #fff4b1)",
+    "Nino": "linear-gradient(135deg, #f6d364, #fff4b1)",
+    "Especial": "linear-gradient(135deg, #7b2aa7, #ff39c6)",
+    "Otros": "linear-gradient(135deg, #7b2aa7, #ff39c6)",
+}
+
+IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
+VIDEO_EXTENSIONS = {".mp4", ".mov", ".m4v", ".webm"}
+
+
+def normalize_category_label(value):
+    return CATEGORY_LABELS.get(value, value or "Otros")
+
+
+def build_slug(value):
+    normalized = unicodedata.normalize("NFKD", str(value or ""))
+    ascii_value = normalized.encode("ascii", "ignore").decode("ascii")
+    sanitized = re.sub(r"[^a-z0-9]+", "-", ascii_value.lower()).strip("-")
+    return sanitized or secrets.token_hex(4)
 
 
 def _guess_mime_type(file_path, media_type):
-    guessed, _encoding = mimetypes.guess_type(file_path)
-    if guessed:
-        return guessed
+    path = Path(file_path)
     if media_type == "video":
-        return "video/quicktime"
-    return "image/jpeg"
+        if path.suffix.lower() in {".mov", ".mp4", ".m4v"}:
+            return "video/mp4"
+        if path.suffix.lower() == ".webm":
+            return "video/webm"
+        guessed, _encoding = mimetypes.guess_type(file_path)
+        return guessed or "video/mp4"
+
+    guessed, _encoding = mimetypes.guess_type(file_path)
+    return guessed or "image/jpeg"
 
 
 def _media_exists(file_path):
@@ -31,6 +77,40 @@ def _media_exists(file_path):
         return False
 
     return resolved_path.exists() and resolved_path.is_file()
+
+
+def _build_upload_relative_path(slug, filename):
+    extension = Path(filename).suffix.lower()
+    safe_name = secure_filename(Path(filename).stem) or "archivo"
+    token = secrets.token_hex(4)
+    return Path("uploads") / slug / f"{safe_name}-{token}{extension}"
+
+
+def _is_managed_upload(file_path):
+    path = Path(file_path)
+    return path.parts[:1] == ("uploads",)
+
+
+def _delete_media_file_if_managed(file_path):
+    if not _is_managed_upload(file_path):
+        return
+
+    media_root = Path(current_app.config["MEDIA_ROOT"]).resolve()
+    target_path = (media_root / Path(file_path)).resolve()
+
+    if media_root not in target_path.parents:
+        return
+
+    if target_path.exists() and target_path.is_file():
+        target_path.unlink()
+
+    parent = target_path.parent
+    while parent != media_root and parent.exists():
+        try:
+            parent.rmdir()
+        except OSError:
+            break
+        parent = parent.parent
 
 
 def _fetch_sizes(db, product_id):
@@ -137,12 +217,14 @@ def _serialize_product(row, sizes, media):
     videos = [item for item in media if item["kind"] == "video"]
     preview_media = images[0] if images else (videos[0] if videos else None)
     display_sizes = _build_display_sizes(row, sizes)
+    category_label = normalize_category_label(row["category"])
     search_terms = " ".join(
         [
             row["name"],
             row["sku"] or "",
             row["family"],
             row["category"],
+            category_label,
             row["description"],
             *[size["label"] for size in display_sizes],
         ]
@@ -155,6 +237,8 @@ def _serialize_product(row, sizes, media):
         "name": row["name"],
         "family": row["family"],
         "category": row["category"],
+        "category_label": category_label,
+        "filter_group": category_label,
         "accent": row["accent"],
         "description": row["description"],
         "sizes": sizes,
@@ -175,6 +259,19 @@ def _hydrate_product(row):
     sizes = _fetch_sizes(db, row["id"])
     media = _fetch_media(db, row["id"])
     return _serialize_product(row, sizes, media)
+
+
+def _next_product_sort_order(db):
+    row = db.execute("SELECT COALESCE(MAX(sort_order), 0) + 1 AS next_value FROM products").fetchone()
+    return row["next_value"]
+
+
+def _next_media_sort_order(db, product_id):
+    row = db.execute(
+        "SELECT COALESCE(MAX(sort_order), 0) + 1 AS next_value FROM product_media WHERE product_id = ?",
+        (product_id,),
+    ).fetchone()
+    return row["next_value"]
 
 
 def fetch_all_products():
@@ -239,16 +336,47 @@ def fetch_media_by_token(token):
     }
 
 
-def update_product_stock(product_id, size_updates):
+def fetch_product_media_by_id(media_id):
+    db = get_db()
+    row = db.execute(
+        """
+        SELECT id, product_id, public_token, media_type, label, file_path, sort_order
+        FROM product_media
+        WHERE id = ?
+        """,
+        (media_id,),
+    ).fetchone()
+    return dict(row) if row else None
+
+
+def update_product_details_and_stock(product_id, product_payload, size_updates):
     db = get_db()
     db.execute("BEGIN")
 
     try:
+        db.execute(
+            """
+            UPDATE products
+            SET slug = ?, sku = ?, name = ?, family = ?, category = ?, accent = ?, description = ?
+            WHERE id = ?
+            """,
+            (
+                product_payload["slug"],
+                product_payload["sku"],
+                product_payload["name"],
+                product_payload["family"],
+                product_payload["category"],
+                product_payload["accent"],
+                product_payload["description"],
+                product_id,
+            ),
+        )
+
         existing_sizes = {
-            row["size_label"]: {"id": row["id"], "sort_order": row["sort_order"]}
+            row["size_label"]: {"id": row["id"]}
             for row in db.execute(
                 """
-                SELECT id, size_label, sort_order
+                SELECT id, size_label
                 FROM product_sizes
                 WHERE product_id = ?
                 """,
@@ -280,3 +408,130 @@ def update_product_stock(product_id, size_updates):
     except Exception:
         db.rollback()
         raise
+
+
+def create_product(product_payload):
+    db = get_db()
+    sort_order = _next_product_sort_order(db)
+    cursor = db.execute(
+        """
+        INSERT INTO products (slug, sku, name, family, category, accent, description, sort_order)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+        (
+            product_payload["slug"],
+            product_payload["sku"],
+            product_payload["name"],
+            product_payload["family"],
+            product_payload["category"],
+            product_payload["accent"],
+            product_payload["description"],
+            sort_order,
+        ),
+    )
+    product_id = cursor.lastrowid
+
+    for size_order, label in enumerate(SIZE_PROFILES.get(product_payload["category"], []), start=1):
+        db.execute(
+            """
+            INSERT INTO product_sizes (product_id, size_label, quantity, sort_order)
+            VALUES (?, ?, 0, ?)
+            """,
+            (product_id, label, size_order),
+        )
+
+    db.commit()
+    return product_id
+
+
+def create_product_media(product_id, product_slug, uploads):
+    media_root = Path(current_app.config["MEDIA_ROOT"]).resolve()
+    db = get_db()
+    next_order = _next_media_sort_order(db, product_id)
+    saved_total = 0
+
+    for upload in uploads:
+        filename = secure_filename(upload.filename or "")
+        if not filename:
+            continue
+
+        extension = Path(filename).suffix.lower()
+        if extension in IMAGE_EXTENSIONS:
+            media_type = "image"
+        elif extension in VIDEO_EXTENSIONS:
+            media_type = "video"
+        else:
+            continue
+
+        relative_path = _build_upload_relative_path(product_slug, filename)
+        target_path = (media_root / relative_path).resolve()
+        target_path.parent.mkdir(parents=True, exist_ok=True)
+        upload.save(target_path)
+
+        db.execute(
+            """
+            INSERT INTO product_media (product_id, public_token, media_type, label, file_path, sort_order)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (
+                product_id,
+                secrets.token_urlsafe(18),
+                media_type,
+                Path(filename).stem,
+                relative_path.as_posix(),
+                next_order,
+            ),
+        )
+        next_order += 1
+        saved_total += 1
+
+    db.commit()
+    return saved_total
+
+
+def delete_product_media(media_id):
+    db = get_db()
+    media_row = fetch_product_media_by_id(media_id)
+    if not media_row:
+        return None
+
+    db.execute("DELETE FROM product_media WHERE id = ?", (media_id,))
+    db.commit()
+    _delete_media_file_if_managed(media_row["file_path"])
+    return media_row["product_id"]
+
+
+def delete_product(product_id):
+    db = get_db()
+    product = fetch_product_by_id(product_id)
+    if not product:
+        return None
+
+    media_paths = [item["file_path"] for item in product["media"]]
+    db.execute("DELETE FROM products WHERE id = ?", (product_id,))
+    db.commit()
+
+    for file_path in media_paths:
+        _delete_media_file_if_managed(file_path)
+
+    return product
+
+
+def build_product_payload(name, category, sku="", slug="", family="", description="", accent=""):
+    normalized_category = normalize_category_label(category)
+    resolved_name = str(name or "").strip()
+    resolved_slug = build_slug(slug or resolved_name)
+    resolved_family = str(family or normalized_category).strip() or normalized_category
+    resolved_sku = str(sku or "").strip() or None
+    resolved_description = str(description or "").strip()
+    resolved_accent = str(accent or "").strip() or DEFAULT_ACCENTS.get(normalized_category, DEFAULT_ACCENTS["Otros"])
+
+    return {
+        "slug": resolved_slug,
+        "sku": resolved_sku,
+        "name": resolved_name,
+        "family": resolved_family,
+        "category": normalized_category,
+        "accent": resolved_accent,
+        "description": resolved_description,
+    }

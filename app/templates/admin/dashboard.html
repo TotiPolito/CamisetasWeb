@@ -4,11 +4,66 @@
 
 {% block content %}
 <main class="page-grid">
-    <section class="panel">
+    <section class="panel" id="new-product">
         <div class="panel__header">
             <div>
                 <p class="eyebrow">Panel admin</p>
-                <h1>Editar stock de camisetas</h1>
+                <h1>Gestionar catalogo</h1>
+            </div>
+        </div>
+
+        <form class="admin-form admin-form--create" method="post" action="{{ url_for('admin.create_product_action') }}" data-admin-form>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div class="admin-size-grid admin-size-grid--details">
+                <label class="field">
+                    <span>Nombre</span>
+                    <input type="text" name="name" placeholder="Nuevo modelo" required>
+                </label>
+                <label class="field">
+                    <span>SKU</span>
+                    <input type="text" name="sku" placeholder="TOT-HOM-003">
+                </label>
+                <label class="field">
+                    <span>Slug</span>
+                    <input type="text" name="slug" placeholder="nuevo-modelo">
+                </label>
+                <label class="field">
+                    <span>Categoria</span>
+                    <select name="category" required>
+                        <option value="">Selecciona una categoria</option>
+                        <option value="Hombre">Hombre</option>
+                        <option value="Dama">Dama</option>
+                        <option value="Niño">Niño</option>
+                        <option value="Otros">Otros</option>
+                    </select>
+                </label>
+                <label class="field">
+                    <span>Familia</span>
+                    <input type="text" name="family" placeholder="Hombre">
+                </label>
+                <label class="field">
+                    <span>Color principal</span>
+                    <input type="text" name="accent" placeholder="linear-gradient(135deg, #8da6de, #d9e2ff)">
+                </label>
+            </div>
+
+            <label class="field">
+                <span>Descripcion interna</span>
+                <textarea name="description" rows="3" placeholder="Texto interno para tener referencia del modelo."></textarea>
+            </label>
+
+            <div class="admin-form__actions">
+                <button class="button button--primary" type="submit" data-submit-label>Agregar modelo</button>
+            </div>
+        </form>
+    </section>
+
+    <section class="panel">
+        <div class="panel__header">
+            <div>
+                <p class="eyebrow">Productos</p>
+                <h2>Editar productos, stock y media</h2>
             </div>
         </div>
 
@@ -17,10 +72,9 @@
                 <article class="admin-card" id="product-{{ product.id }}" style="--card-accent: {{ product.accent }}">
                     <div class="admin-card__head">
                         <div>
-                            <p class="admin-card__category">{{ product.category }}</p>
+                            <p class="admin-card__category">{{ product.category_label }}</p>
                             <h2>{{ product.name }}</h2>
                             <p class="product-code">SKU {{ product.sku }}</p>
-                            <p>{{ product.description }}</p>
                         </div>
                         <div class="admin-card__summary">
                             <span>{{ product.total_stock }} unidades</span>
@@ -28,8 +82,45 @@
                         </div>
                     </div>
 
-                    <form class="admin-form" method="post" action="{{ url_for('admin.update_stock', product_id=product.id) }}" data-admin-form>
+                    <form class="admin-form" method="post" action="{{ url_for('admin.update_product', product_id=product.id) }}" data-admin-form>
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                        <div class="admin-size-grid admin-size-grid--details">
+                            <label class="field">
+                                <span>Nombre</span>
+                                <input type="text" name="name" value="{{ product.name }}" required>
+                            </label>
+                            <label class="field">
+                                <span>SKU</span>
+                                <input type="text" name="sku" value="{{ product.sku or '' }}">
+                            </label>
+                            <label class="field">
+                                <span>Slug</span>
+                                <input type="text" name="slug" value="{{ product.slug }}" required>
+                            </label>
+                            <label class="field">
+                                <span>Categoria</span>
+                                <select name="category" required>
+                                    <option value="Hombre"{% if product.category_label == "Hombre" %} selected{% endif %}>Hombre</option>
+                                    <option value="Dama"{% if product.category_label == "Dama" %} selected{% endif %}>Dama</option>
+                                    <option value="Niño"{% if product.category_label == "Niño" %} selected{% endif %}>Niño</option>
+                                    <option value="Otros"{% if product.category_label == "Otros" %} selected{% endif %}>Otros</option>
+                                </select>
+                            </label>
+                            <label class="field">
+                                <span>Familia</span>
+                                <input type="text" name="family" value="{{ product.family }}">
+                            </label>
+                            <label class="field">
+                                <span>Color principal</span>
+                                <input type="text" name="accent" value="{{ product.accent }}">
+                            </label>
+                        </div>
+
+                        <label class="field">
+                            <span>Descripcion interna</span>
+                            <textarea name="description" rows="3">{{ product.description }}</textarea>
+                        </label>
 
                         <div class="admin-size-grid">
                             {% for size in product.display_sizes %}
@@ -41,8 +132,64 @@
                         </div>
 
                         <div class="admin-form__actions">
-                            <button class="button button--primary" type="submit" data-submit-label>Guardar stock</button>
+                            <button class="button button--primary" type="submit" data-submit-label>Guardar cambios</button>
                         </div>
+                    </form>
+
+                    <section class="admin-media">
+                        <div class="admin-media__header">
+                            <div>
+                                <p class="eyebrow">Fotos y videos</p>
+                                <h3>Archivos del producto</h3>
+                            </div>
+                        </div>
+
+                        {% if product.media %}
+                            <div class="admin-media-grid">
+                                {% for media in product.media %}
+                                    <article class="admin-media-card">
+                                        <div class="admin-media-card__frame">
+                                            {% if media.kind == "video" %}
+                                                <video class="cover-media" controls playsinline preload="metadata">
+                                                    <source src="{{ url_for('public.media', token=media.token) }}">
+                                                </video>
+                                            {% else %}
+                                                <img class="cover-media" src="{{ url_for('public.media', token=media.token, variant='admin') }}" alt="{{ product.name }} - {{ media.label }}">
+                                            {% endif %}
+                                        </div>
+                                        <div class="admin-media-card__body">
+                                            <p>{{ media.label }}</p>
+                                            <span>{{ media.kind }}</span>
+                                        </div>
+                                        <form method="post" action="{{ url_for('admin.delete_product_media_action', media_id=media.id) }}">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                            <button class="button button--secondary button--block" type="submit">Quitar archivo</button>
+                                        </form>
+                                    </article>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <article class="empty-state-card empty-state-card--compact">
+                                <h3>Sin archivos cargados</h3>
+                                <p>Sube fotos o videos desde este mismo panel.</p>
+                            </article>
+                        {% endif %}
+
+                        <form class="admin-upload-form" method="post" action="{{ url_for('admin.upload_product_media', product_id=product.id) }}" enctype="multipart/form-data">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <label class="field">
+                                <span>Agregar fotos o videos</span>
+                                <input type="file" name="media_files" accept="image/*,video/*,.mov,.mp4,.m4v,.webm" multiple>
+                            </label>
+                            <div class="admin-form__actions">
+                                <button class="button button--secondary" type="submit">Subir archivos</button>
+                            </div>
+                        </form>
+                    </section>
+
+                    <form class="admin-delete-form" method="post" action="{{ url_for('admin.delete_product_action', product_id=product.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button class="button button--danger" type="submit">Eliminar modelo completo</button>
                     </form>
                 </article>
             {% endfor %}

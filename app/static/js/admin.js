@@ -3,10 +3,17 @@ function initAdminForms() {
 
     forms.forEach((form) => {
         const submitButton = form.querySelector("[data-submit-label]");
-        const inputs = form.querySelectorAll("input[type='number']");
+        const fields = form.querySelectorAll("input, textarea, select");
 
-        inputs.forEach((input) => {
-            input.addEventListener("input", () => {
+        fields.forEach((field) => {
+            field.addEventListener("input", () => {
+                form.classList.add("is-dirty");
+                if (submitButton) {
+                    submitButton.textContent = "Guardar cambios";
+                }
+            });
+
+            field.addEventListener("change", () => {
                 form.classList.add("is-dirty");
                 if (submitButton) {
                     submitButton.textContent = "Guardar cambios";
