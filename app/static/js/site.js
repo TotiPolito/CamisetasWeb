@@ -170,8 +170,12 @@ function initCatalogFilters() {
     const searchInput = document.querySelector("#catalog-search");
     const filterButtons = document.querySelectorAll("[data-filter]");
     const sizeFilterButtons = document.querySelectorAll("[data-size-filter]");
+    const filterPanels = document.querySelectorAll("[data-filter-panel]");
+    const filterSummary = document.querySelector("[data-filter-summary]");
+    const sizeFilterSummary = document.querySelector("[data-size-filter-summary]");
     const cards = document.querySelectorAll(".product-card[data-category]");
     const emptyState = document.querySelector("#catalog-empty");
+    const heroCard = document.querySelector(".hero-card");
 
     if (!searchInput || cards.length === 0) {
         return;
@@ -184,6 +188,10 @@ function initCatalogFilters() {
         const rawTerm = normalizeText(searchInput.value).trim();
         const searchTerm = rawTerm.length >= 3 ? rawTerm : "";
         let visibleCards = 0;
+
+        if (heroCard) {
+            heroCard.hidden = rawTerm.length > 0;
+        }
 
         cards.forEach((card) => {
             const cardCategory = normalizeText(card.dataset.category || "");
@@ -205,6 +213,14 @@ function initCatalogFilters() {
         if (emptyState) {
             emptyState.hidden = visibleCards !== 0;
         }
+
+        if (filterSummary) {
+            filterSummary.textContent = activeFilter;
+        }
+
+        if (sizeFilterSummary) {
+            sizeFilterSummary.textContent = activeSizeFilter;
+        }
     }
 
     filterButtons.forEach((button) => {
@@ -212,6 +228,11 @@ function initCatalogFilters() {
             activeFilter = button.dataset.filter || "Todos";
             filterButtons.forEach((item) => item.classList.remove("is-active"));
             button.classList.add("is-active");
+            filterPanels.forEach((panel) => {
+                if (panel.contains(button)) {
+                    panel.open = false;
+                }
+            });
             applyFilters();
         });
     });
@@ -221,6 +242,11 @@ function initCatalogFilters() {
             activeSizeFilter = button.dataset.sizeFilter || "Todos";
             sizeFilterButtons.forEach((item) => item.classList.remove("is-active"));
             button.classList.add("is-active");
+            filterPanels.forEach((panel) => {
+                if (panel.contains(button)) {
+                    panel.open = false;
+                }
+            });
             applyFilters();
         });
     });

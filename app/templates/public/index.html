@@ -56,26 +56,36 @@
     <section class="panel panel--catalog" id="catalogo">
         <div class="catalog-toolbar">
             <div class="filter-stack">
-                <div class="filter-group">
-                    <span class="filter-group__label">Categoria</span>
-                    <div class="filter-row" id="catalog-filters">
-                        {% for filter_name in filters %}
-                            <button class="filter-button{% if loop.first %} is-active{% endif %}" type="button" data-filter="{{ filter_name }}">
-                                {{ filter_name }}
-                            </button>
-                        {% endfor %}
+                <details class="filter-panel" data-filter-panel>
+                    <summary class="filter-panel__summary">
+                        <span class="filter-group__label">Categoria</span>
+                        <strong class="filter-panel__value" data-filter-summary>Todos</strong>
+                    </summary>
+                    <div class="filter-group">
+                        <div class="filter-row" id="catalog-filters">
+                            {% for filter_name in filters %}
+                                <button class="filter-button{% if loop.first %} is-active{% endif %}" type="button" data-filter="{{ filter_name }}">
+                                    {{ filter_name }}
+                                </button>
+                            {% endfor %}
+                        </div>
                     </div>
-                </div>
-                <div class="filter-group">
-                    <span class="filter-group__label">Talle</span>
-                    <div class="filter-row filter-row--sizes" id="catalog-size-filters">
-                        {% for size_name in size_filters %}
-                            <button class="filter-button filter-button--size{% if loop.first %} is-active{% endif %}" type="button" data-size-filter="{{ size_name }}">
-                                {{ size_name }}
-                            </button>
-                        {% endfor %}
+                </details>
+                <details class="filter-panel" data-filter-panel>
+                    <summary class="filter-panel__summary">
+                        <span class="filter-group__label">Talle</span>
+                        <strong class="filter-panel__value" data-size-filter-summary>Todos</strong>
+                    </summary>
+                    <div class="filter-group">
+                        <div class="filter-row filter-row--sizes" id="catalog-size-filters">
+                            {% for size_name in size_filters %}
+                                <button class="filter-button filter-button--size{% if loop.first %} is-active{% endif %}" type="button" data-size-filter="{{ size_name }}">
+                                    {{ size_name }}
+                                </button>
+                            {% endfor %}
+                        </div>
                     </div>
-                </div>
+                </details>
             </div>
         </div>
 
