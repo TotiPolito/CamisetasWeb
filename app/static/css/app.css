@@ -581,12 +581,6 @@ html[data-theme="dark"] .hero-panel {
     color: var(--text-soft);
 }
 
-.search-box__hint {
-    color: var(--text-soft);
-    font-size: 0.74rem;
-    font-weight: 600;
-}
-
 .filter-row {
     align-items: center;
 }
