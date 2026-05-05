@@ -7,9 +7,9 @@
     <section class="hero-card hero-card--store{% if not is_admin_logged_in %} hero-card--single{% endif %}">
         <div class="hero-card__copy">
             <p class="eyebrow">Toti Camisetas</p>
-            <h1>Elegi tu camiseta y cerralo por WhatsApp</h1>
+            <h1>Encontrá tu camiseta ideal acá</h1>
             <p class="hero-card__text">
-                Mira cada modelo, revisa el stock por talle y arma tu pedido desde el carrito.
+                Explorá el catálogo, filtrá por categoría o talle y entrá al detalle desde cada foto.
             </p>
             <div class="hero-card__actions">
                 <a class="button button--primary" href="#catalogo">Ver catalogo</a>
@@ -55,12 +55,27 @@
 
     <section class="panel panel--catalog" id="catalogo">
         <div class="catalog-toolbar">
-            <div class="filter-row" id="catalog-filters">
-                {% for filter_name in filters %}
-                    <button class="filter-button{% if loop.first %} is-active{% endif %}" type="button" data-filter="{{ filter_name }}">
-                        {{ filter_name }}
-                    </button>
-                {% endfor %}
+            <div class="filter-stack">
+                <div class="filter-group">
+                    <span class="filter-group__label">Categoria</span>
+                    <div class="filter-row" id="catalog-filters">
+                        {% for filter_name in filters %}
+                            <button class="filter-button{% if loop.first %} is-active{% endif %}" type="button" data-filter="{{ filter_name }}">
+                                {{ filter_name }}
+                            </button>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <span class="filter-group__label">Talle</span>
+                    <div class="filter-row filter-row--sizes" id="catalog-size-filters">
+                        {% for size_name in size_filters %}
+                            <button class="filter-button filter-button--size{% if loop.first %} is-active{% endif %}" type="button" data-size-filter="{{ size_name }}">
+                                {{ size_name }}
+                            </button>
+                        {% endfor %}
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -72,6 +87,7 @@
                     data-category="{{ product.filter_group }}"
                     data-search="{{ product.search_blob }}"
                     data-title="{{ product.name }}"
+                    data-sizes="{{ product.available_sizes|join(',') }}"
                 >
                     <a class="product-card__media media-protect" data-protected-media href="{{ url_for('public.product_detail', slug=product.slug) }}">
                         {% if product.images %}
@@ -90,17 +106,18 @@
                     <div class="product-card__head">
                         <div class="product-card__meta">
                             <span class="badge">{{ product.category_label }}</span>
-                            <span class="badge badge--stock">{{ product.total_stock }} disponibles</span>
+                            <span class="badge badge--stock">
+                                {% if product.total_stock <= 2 %}
+                                    Ultimas {{ product.total_stock }}
+                                {% else %}
+                                    {{ product.total_stock }} unidades
+                                {% endif %}
+                            </span>
                         </div>
                         <div class="product-card__copy">
                             <h3>{{ product.name }}</h3>
-                            <p class="product-code">SKU {{ product.sku }}</p>
+                            <p class="product-card__hint">Toca la foto para ver el detalle.</p>
                         </div>
-                    </div>
-
-                    <div class="product-card__counts">
-                        <span class="badge badge--soft">{{ product.image_count }} foto{% if product.image_count != 1 %}s{% endif %}</span>
-                        <span class="badge badge--video">{{ product.video_count }} video{% if product.video_count != 1 %}s{% endif %}</span>
                     </div>
 
                     <div class="size-grid size-grid--compact">
@@ -110,12 +127,6 @@
                                 <small>{{ size.quantity }}</small>
                             </span>
                         {% endfor %}
-                    </div>
-
-                    <div class="product-card__actions">
-                        <a class="button button--primary button--block" href="{{ url_for('public.product_detail', slug=product.slug) }}">
-                            Ver detalle
-                        </a>
                     </div>
                 </article>
             {% endfor %}

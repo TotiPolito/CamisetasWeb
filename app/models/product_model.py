@@ -260,6 +260,7 @@ def _serialize_product(row, sizes, media):
     videos = [item for item in media if item["kind"] == "video"]
     preview_media = images[0] if images else (videos[0] if videos else None)
     display_sizes = _build_display_sizes(row, sizes)
+    available_sizes = [size["label"] for size in display_sizes if size["quantity"] > 0]
     category_label = normalize_category_label(row["category"])
     accent_color = _extract_accent_color(row["accent"], category_label)
     search_terms = " ".join(
@@ -288,6 +289,7 @@ def _serialize_product(row, sizes, media):
         "description": row["description"],
         "sizes": sizes,
         "display_sizes": display_sizes,
+        "available_sizes": available_sizes,
         "media": media,
         "images": images,
         "videos": videos,

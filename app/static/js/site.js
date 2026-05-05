@@ -169,6 +169,7 @@ function addItemToCart(item) {
 function initCatalogFilters() {
     const searchInput = document.querySelector("#catalog-search");
     const filterButtons = document.querySelectorAll("[data-filter]");
+    const sizeFilterButtons = document.querySelectorAll("[data-size-filter]");
     const cards = document.querySelectorAll(".product-card[data-category]");
     const emptyState = document.querySelector("#catalog-empty");
 
@@ -177,6 +178,7 @@ function initCatalogFilters() {
     }
 
     let activeFilter = "Todos";
+    let activeSizeFilter = "Todos";
 
     function applyFilters() {
         const rawTerm = normalizeText(searchInput.value).trim();
@@ -186,9 +188,14 @@ function initCatalogFilters() {
         cards.forEach((card) => {
             const cardCategory = normalizeText(card.dataset.category || "");
             const cardTitle = normalizeText(card.dataset.title || "");
+            const cardSizes = String(card.dataset.sizes || "")
+                .split(",")
+                .map((value) => normalizeText(value.trim()))
+                .filter(Boolean);
             const matchesFilter = activeFilter === "Todos" || cardCategory === normalizeText(activeFilter);
+            const matchesSize = activeSizeFilter === "Todos" || cardSizes.includes(normalizeText(activeSizeFilter));
             const matchesSearch = searchTerm === "" || cardTitle.includes(searchTerm);
-            const shouldShow = matchesFilter && matchesSearch;
+            const shouldShow = matchesFilter && matchesSize && matchesSearch;
             card.hidden = !shouldShow;
             if (shouldShow) {
                 visibleCards += 1;
@@ -204,6 +211,15 @@ function initCatalogFilters() {
         button.addEventListener("click", () => {
             activeFilter = button.dataset.filter || "Todos";
             filterButtons.forEach((item) => item.classList.remove("is-active"));
+            button.classList.add("is-active");
+            applyFilters();
+        });
+    });
+
+    sizeFilterButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+            activeSizeFilter = button.dataset.sizeFilter || "Todos";
+            sizeFilterButtons.forEach((item) => item.classList.remove("is-active"));
             button.classList.add("is-active");
             applyFilters();
         });

@@ -7,6 +7,7 @@ from app.services.media_service import stream_media
 public_bp = Blueprint("public", __name__)
 
 FILTER_ORDER = ["Todos", "Hombre", "Dama", "Niño", "Otros"]
+SIZE_FILTER_ORDER = ["S", "M", "L", "XL", "XXL", "8", "10", "12", "14", "16"]
 
 
 def _build_catalog_stats(products):
@@ -25,16 +26,30 @@ def _build_filters(products):
     return [filter_name for filter_name in FILTER_ORDER if filter_name == "Todos" or filter_name in product_filters]
 
 
+def _build_size_filters(products):
+    size_labels = {
+        size["label"]
+        for product in products
+        for size in product["display_sizes"]
+        if size["quantity"] > 0
+    }
+    ordered_sizes = [label for label in SIZE_FILTER_ORDER if label in size_labels]
+    extra_sizes = sorted(size_labels.difference(ordered_sizes))
+    return ["Todos"] + ordered_sizes + extra_sizes
+
+
 @public_bp.get("/")
 def home():
     products = fetch_all_products()
     filters = _build_filters(products)
+    size_filters = _build_size_filters(products)
     stats = _build_catalog_stats(products)
     return render_template(
         "public/index.html",
         page_name="catalog",
         products=products,
         filters=filters,
+        size_filters=size_filters,
         stats=stats,
     )
 

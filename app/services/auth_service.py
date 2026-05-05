@@ -73,8 +73,11 @@ def reset_login_attempts():
 
 
 def ensure_default_admin():
-    username = current_app.config["DEFAULT_ADMIN_USERNAME"]
-    password = current_app.config["DEFAULT_ADMIN_PASSWORD"]
+    username = str(current_app.config.get("DEFAULT_ADMIN_USERNAME") or "").strip()
+    password = str(current_app.config.get("DEFAULT_ADMIN_PASSWORD") or "")
+
+    if not username or not password:
+        return
 
     if find_admin_by_username(username):
         return
