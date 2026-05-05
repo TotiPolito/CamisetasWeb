@@ -263,14 +263,6 @@ function applyTheme(theme) {
             nextTheme === "dark" ? "Pasar a modo claro" : "Pasar a modo oscuro"
         );
     });
-
-    document.querySelectorAll("[data-theme-icon-dark]").forEach((icon) => {
-        icon.hidden = nextTheme === "dark";
-    });
-
-    document.querySelectorAll("[data-theme-icon-light]").forEach((icon) => {
-        icon.hidden = nextTheme !== "dark";
-    });
 }
 
 function initThemeToggle() {

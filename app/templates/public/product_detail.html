@@ -82,7 +82,7 @@
         <aside class="product-hero__preview{% if product.preview_media and product.preview_media.kind == 'video' %} product-hero__preview--video{% endif %} media-protect" data-protected-media>
             {% if product.preview_media %}
                 {% if product.preview_media.kind == "video" %}
-                    <video class="cover-media" controls controlsList="nodownload noplaybackrate noremoteplayback" disablePictureInPicture playsinline preload="metadata">
+                    <video class="cover-media" controls controlsList="nodownload noplaybackrate noremoteplayback" disablePictureInPicture playsinline preload="none">
                         <source src="{{ url_for('public.media', token=product.preview_media.token) }}">
                     </video>
                 {% else %}
@@ -112,7 +112,7 @@
                 {% for media in product.videos %}
                     <article class="media-card media-card--video media-protect" data-protected-media>
                         <div class="media-card__frame">
-                            <video class="cover-media" controls controlsList="nodownload noplaybackrate noremoteplayback" disablePictureInPicture playsinline preload="metadata">
+                            <video class="cover-media" controls controlsList="nodownload noplaybackrate noremoteplayback" disablePictureInPicture playsinline preload="none">
                                 <source src="{{ url_for('public.media', token=media.token) }}">
                             </video>
                         </div>

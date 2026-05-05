@@ -306,6 +306,15 @@ html[data-theme="dark"] .admin-card {
     padding: 0;
 }
 
+.icon-button--theme {
+    gap: 0;
+    color: #0f3f69;
+}
+
+html[data-theme="dark"] .icon-button--theme {
+    color: #ffd166;
+}
+
 .icon-button--cart {
     width: auto;
     min-width: 3rem;
@@ -650,6 +659,11 @@ html[data-theme="dark"] .hero-panel {
     aspect-ratio: 9 / 16;
 }
 
+.product-hero__preview--video {
+    width: min(100%, 360px);
+    justify-self: center;
+}
+
 .cover-media {
     width: 100%;
     height: 100%;
@@ -931,7 +945,8 @@ img.cover-media {
 }
 
 .media-grid--video {
-    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(170px, 220px));
+    justify-content: start;
 }
 
 .media-grid--photo {
@@ -970,6 +985,55 @@ img.cover-media {
 .field {
     min-width: 0;
     align-content: start;
+}
+
+.field--color {
+    align-content: stretch;
+}
+
+.color-input {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    min-height: 3.1rem;
+    padding: 0.65rem 0.8rem;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: var(--surface-strong);
+}
+
+.color-input__picker {
+    width: 3.25rem;
+    min-width: 3.25rem;
+    height: 3.25rem;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 14px;
+    overflow: hidden;
+    cursor: pointer;
+    background: transparent;
+}
+
+.color-input__picker::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.color-input__picker::-webkit-color-swatch {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+}
+
+.color-input__picker::-moz-color-swatch {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+}
+
+.color-input__value {
+    color: var(--text);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
 }
 
 .auth-note {
@@ -1277,12 +1341,6 @@ img.cover-media {
     --icon: url("/static/icons/sun-fill.svg");
 }
 
-.icon--moon {
-    background: center / contain no-repeat url("/static/icons/moon-custom.png");
-    -webkit-mask: none;
-    mask: none;
-}
-
 .icon--cart {
     --icon: url("/static/icons/cart3.svg");
 }
@@ -1421,6 +1479,10 @@ img.cover-media {
     .icon-button {
         width: auto;
         flex: 0 0 auto;
+    }
+
+    .icon-button--theme {
+        width: 3rem;
     }
 
     .catalog-toolbar,

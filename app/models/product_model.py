@@ -42,6 +42,7 @@ DEFAULT_ACCENTS = {
 
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
 VIDEO_EXTENSIONS = {".mp4", ".mov", ".m4v", ".webm"}
+HEX_COLOR_PATTERN = re.compile(r"#(?:[0-9a-fA-F]{6})")
 
 
 def normalize_category_label(value):
@@ -53,6 +54,48 @@ def build_slug(value):
     ascii_value = normalized.encode("ascii", "ignore").decode("ascii")
     sanitized = re.sub(r"[^a-z0-9]+", "-", ascii_value.lower()).strip("-")
     return sanitized or secrets.token_hex(4)
+
+
+def _clamp_color_channel(value):
+    return max(0, min(255, int(round(value))))
+
+
+def _lighten_hex_color(hex_color, ratio=0.42):
+    color = str(hex_color or "").strip()
+    if not HEX_COLOR_PATTERN.fullmatch(color):
+        return "#d9e2ff"
+
+    red = int(color[1:3], 16)
+    green = int(color[3:5], 16)
+    blue = int(color[5:7], 16)
+
+    next_red = _clamp_color_channel(red + (255 - red) * ratio)
+    next_green = _clamp_color_channel(green + (255 - green) * ratio)
+    next_blue = _clamp_color_channel(blue + (255 - blue) * ratio)
+    return f"#{next_red:02x}{next_green:02x}{next_blue:02x}"
+
+
+def _extract_accent_color(accent_value, category_label):
+    accent_text = str(accent_value or "").strip()
+    match = HEX_COLOR_PATTERN.search(accent_text)
+    if match:
+        return match.group(0).lower()
+
+    fallback_match = HEX_COLOR_PATTERN.search(DEFAULT_ACCENTS.get(category_label, DEFAULT_ACCENTS["Otros"]))
+    if fallback_match:
+        return fallback_match.group(0).lower()
+
+    return "#8da6de"
+
+
+def _build_accent_style(accent_value, category_label):
+    accent_text = str(accent_value or "").strip()
+    if HEX_COLOR_PATTERN.fullmatch(accent_text):
+        accent_color = accent_text.lower()
+        soft_color = _lighten_hex_color(accent_color)
+        return f"linear-gradient(135deg, {accent_color}, {soft_color})"
+
+    return accent_text or DEFAULT_ACCENTS.get(category_label, DEFAULT_ACCENTS["Otros"])
 
 
 def _guess_mime_type(file_path, media_type):
@@ -218,6 +261,7 @@ def _serialize_product(row, sizes, media):
     preview_media = images[0] if images else (videos[0] if videos else None)
     display_sizes = _build_display_sizes(row, sizes)
     category_label = normalize_category_label(row["category"])
+    accent_color = _extract_accent_color(row["accent"], category_label)
     search_terms = " ".join(
         [
             row["name"],
@@ -240,6 +284,7 @@ def _serialize_product(row, sizes, media):
         "category_label": category_label,
         "filter_group": category_label,
         "accent": row["accent"],
+        "accent_color": accent_color,
         "description": row["description"],
         "sizes": sizes,
         "display_sizes": display_sizes,
@@ -524,7 +569,7 @@ def build_product_payload(name, category, sku="", slug="", family="", descriptio
     resolved_family = str(family or normalized_category).strip() or normalized_category
     resolved_sku = str(sku or "").strip() or None
     resolved_description = str(description or "").strip()
-    resolved_accent = str(accent or "").strip() or DEFAULT_ACCENTS.get(normalized_category, DEFAULT_ACCENTS["Otros"])
+    resolved_accent = _build_accent_style(accent, normalized_category)
 
     return {
         "slug": resolved_slug,

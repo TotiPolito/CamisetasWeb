@@ -94,7 +94,7 @@ def create_product_action():
         slug=request.form.get("slug", ""),
         family=request.form.get("family", ""),
         description=request.form.get("description", ""),
-        accent=request.form.get("accent", ""),
+        accent=request.form.get("accent_color", "") or request.form.get("accent", ""),
     )
 
     try:
@@ -131,7 +131,7 @@ def update_product(product_id):
         slug=request.form.get("slug", ""),
         family=request.form.get("family", ""),
         description=request.form.get("description", ""),
-        accent=request.form.get("accent", ""),
+        accent=request.form.get("accent_color", "") or request.form.get("accent", ""),
     )
 
     try:

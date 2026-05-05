@@ -42,9 +42,12 @@
                     <span>Familia</span>
                     <input type="text" name="family" placeholder="Hombre">
                 </label>
-                <label class="field">
+                <label class="field field--color">
                     <span>Color principal</span>
-                    <input type="text" name="accent" placeholder="linear-gradient(135deg, #8da6de, #d9e2ff)">
+                    <div class="color-input">
+                        <input class="color-input__picker" type="color" name="accent_color" value="#8da6de" data-color-picker>
+                        <span class="color-input__value" data-color-value>#8da6de</span>
+                    </div>
                 </label>
             </div>
 
@@ -127,9 +130,12 @@
                                                 <span>Familia</span>
                                                 <input type="text" name="family" value="{{ product.family }}">
                                             </label>
-                                            <label class="field">
+                                            <label class="field field--color">
                                                 <span>Color principal</span>
-                                                <input type="text" name="accent" value="{{ product.accent }}">
+                                                <div class="color-input">
+                                                    <input class="color-input__picker" type="color" name="accent_color" value="{{ product.accent_color }}" data-color-picker>
+                                                    <span class="color-input__value" data-color-value>{{ product.accent_color }}</span>
+                                                </div>
                                             </label>
                                         </div>
 

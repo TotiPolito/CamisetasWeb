@@ -61,7 +61,27 @@ function initAdminFolders() {
     });
 }
 
+function initColorPickers() {
+    const pickers = document.querySelectorAll("[data-color-picker]");
+
+    pickers.forEach((picker) => {
+        const field = picker.closest(".field--color");
+        const valueNode = field ? field.querySelector("[data-color-value]") : null;
+
+        const syncValue = () => {
+            if (valueNode) {
+                valueNode.textContent = picker.value;
+            }
+        };
+
+        syncValue();
+        picker.addEventListener("input", syncValue);
+        picker.addEventListener("change", syncValue);
+    });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     initAdminForms();
     initAdminFolders();
+    initColorPickers();
 });
