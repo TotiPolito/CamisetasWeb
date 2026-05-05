@@ -90,6 +90,7 @@
                         class="cover-media"
                         src="{{ url_for('public.media', token=product.preview_media.token, variant='detail') }}"
                         alt="{{ product.name }}"
+                        decoding="async"
                     >
                 {% endif %}
             {% else %}
@@ -139,6 +140,7 @@
                                 src="{{ url_for('public.media', token=media.token, variant='gallery') }}"
                                 alt="{{ product.name }} - {{ media.label }}"
                                 loading="lazy"
+                                decoding="async"
                             >
                         </div>
                     </article>

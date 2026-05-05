@@ -548,6 +548,8 @@ html[data-theme="dark"] .hero-panel {
 .field input,
 .field select,
 .field textarea {
+    width: 100%;
+    min-width: 0;
     min-height: 3.1rem;
     padding: 0.8rem 1rem;
     border: 1px solid var(--line);
@@ -965,6 +967,11 @@ img.cover-media {
     gap: 1rem;
 }
 
+.field {
+    min-width: 0;
+    align-content: start;
+}
+
 .auth-note {
     margin-top: 1rem;
     padding: 1rem;
@@ -1027,7 +1034,7 @@ img.cover-media {
 }
 
 .admin-size-grid--details {
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .admin-media {
@@ -1085,6 +1092,14 @@ img.cover-media {
     gap: 1.4rem;
 }
 
+.admin-panel .panel__header {
+    align-items: flex-start;
+}
+
+.admin-form--create {
+    gap: 1.25rem;
+}
+
 .admin-folder-list {
     display: grid;
     gap: 1rem;
@@ -1135,6 +1150,11 @@ img.cover-media {
     padding: 0 1.15rem 1.15rem;
 }
 
+.admin-product__body {
+    content-visibility: auto;
+    contain-intrinsic-size: 900px;
+}
+
 .admin-product__summary-copy {
     display: grid;
     gap: 0.35rem;
@@ -1152,6 +1172,7 @@ img.cover-media {
 .admin-product__toolbar {
     display: flex;
     justify-content: flex-end;
+    margin-bottom: 0.15rem;
 }
 
 .cart-layer {
@@ -1257,7 +1278,9 @@ img.cover-media {
 }
 
 .icon--moon {
-    --icon: url("/static/icons/moon-stars-fill.svg");
+    background: center / contain no-repeat url("/static/icons/moon-custom.png");
+    -webkit-mask: none;
+    mask: none;
 }
 
 .icon--cart {
@@ -1320,6 +1343,10 @@ img.cover-media {
     }
 
     .hero-stats--admin {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .admin-size-grid--details {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
@@ -1399,6 +1426,10 @@ img.cover-media {
     .catalog-toolbar,
     .panel__header {
         align-items: stretch;
+    }
+
+    .admin-size-grid--details {
+        grid-template-columns: 1fr;
     }
 
     .search-box {

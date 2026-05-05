@@ -85,6 +85,7 @@
                                     src="{{ url_for('public.media', token=product.preview_media.token, variant='card') }}"
                                     alt="{{ product.name }}"
                                     loading="lazy"
+                                    decoding="async"
                                 >
                             {% endif %}
                         {% else %}

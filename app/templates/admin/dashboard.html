@@ -166,11 +166,11 @@
                                                     <article class="admin-media-card">
                                                         <div class="admin-media-card__frame">
                                                             {% if media.kind == "video" %}
-                                                                <video class="cover-media" controls playsinline preload="metadata">
+                                                                <video class="cover-media" controls playsinline preload="none">
                                                                     <source src="{{ url_for('public.media', token=media.token) }}">
                                                                 </video>
                                                             {% else %}
-                                                                <img class="cover-media" src="{{ url_for('public.media', token=media.token, variant='admin') }}" alt="{{ product.name }} - {{ media.label }}">
+                                                                <img class="cover-media" src="{{ url_for('public.media', token=media.token, variant='admin') }}" alt="{{ product.name }} - {{ media.label }}" loading="lazy" decoding="async">
                                                             {% endif %}
                                                         </div>
                                                         <div class="admin-media-card__body">
