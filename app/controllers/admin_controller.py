@@ -18,6 +18,7 @@ from app.services.auth_service import login_required, validate_csrf_token
 
 
 admin_bp = Blueprint("admin", __name__)
+ADMIN_CATEGORY_ORDER = ["Hombre", "Dama", "Niño", "Otros"]
 
 
 def _build_size_updates(product, category_value):
@@ -58,7 +59,19 @@ def _redirect_to_product(product_id):
 @login_required
 def dashboard():
     products = fetch_all_products()
-    return render_template("admin/dashboard.html", page_name="admin", products=products)
+    grouped_products = []
+
+    for category_name in ADMIN_CATEGORY_ORDER:
+        category_products = [product for product in products if product["category_label"] == category_name]
+        if category_products:
+            grouped_products.append({"name": category_name, "products": category_products})
+
+    return render_template(
+        "admin/dashboard.html",
+        page_name="admin",
+        products=products,
+        grouped_products=grouped_products,
+    )
 
 
 @admin_bp.post("/admin/product/create")

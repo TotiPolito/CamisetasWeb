@@ -26,6 +26,23 @@
       ]
     },
     {
+      "slug": "top-dama-argentina",
+      "sku": "TOT-DAM-002",
+      "name": "Top Dama Argentina",
+      "family": "Dama",
+      "category": "Dama",
+      "accent": "linear-gradient(135deg, #90b7e8, #dce8fb)",
+      "description": "Modelo placeholder reinsertado para volver a mostrar los tops de dama en el catalogo mientras se completan sus fotos, videos y stock real.",
+      "sizes": [
+        { "label": "S", "quantity": 0 },
+        { "label": "M", "quantity": 0 },
+        { "label": "L", "quantity": 0 },
+        { "label": "XL", "quantity": 0 },
+        { "label": "XXL", "quantity": 0 }
+      ],
+      "media": []
+    },
+    {
       "slug": "hombre-titular",
       "sku": "TOT-HOM-001",
       "name": "Hombre Titular",

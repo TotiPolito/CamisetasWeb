@@ -71,6 +71,7 @@
                     style="--card-accent: {{ product.accent }}"
                     data-category="{{ product.filter_group }}"
                     data-search="{{ product.search_blob }}"
+                    data-title="{{ product.name }}"
                 >
                     <a class="product-card__media{% if product.preview_media and product.preview_media.kind == 'video' %} product-card__media--video{% endif %} media-protect" data-protected-media href="{{ url_for('public.product_detail', slug=product.slug) }}">
                         {% if product.preview_media %}

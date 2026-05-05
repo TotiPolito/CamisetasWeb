@@ -71,59 +71,82 @@ def _ensure_catalog_skus(payload):
         db.commit()
 
 
+def _insert_seed_product(db, product, product_order):
+    cursor = db.execute(
+        """
+        INSERT INTO products (slug, sku, name, family, category, accent, description, sort_order)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+        (
+            product["slug"],
+            _resolve_product_sku(product, product_order),
+            product["name"],
+            product["family"],
+            product["category"],
+            product["accent"],
+            product["description"],
+            product_order,
+        ),
+    )
+    product_id = cursor.lastrowid
+
+    for size_order, size in enumerate(product["sizes"], start=1):
+        db.execute(
+            """
+            INSERT INTO product_sizes (product_id, size_label, quantity, sort_order)
+            VALUES (?, ?, ?, ?)
+            """,
+            (product_id, size["label"], size["quantity"], size_order),
+        )
+
+    for media_order, media in enumerate(product["media"], start=1):
+        db.execute(
+            """
+            INSERT INTO product_media (product_id, public_token, media_type, label, file_path, sort_order)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (
+                product_id,
+                secrets.token_urlsafe(18),
+                media["type"],
+                media["label"],
+                media["path"],
+                media_order,
+            ),
+        )
+
+
+def _ensure_seed_products_exist(payload):
+    db = get_db()
+    existing_slugs = {
+        row["slug"]
+        for row in db.execute("SELECT slug FROM products").fetchall()
+    }
+    has_changes = False
+
+    for product_order, product in enumerate(payload["products"], start=1):
+        if product["slug"] in existing_slugs:
+            continue
+        _insert_seed_product(db, product, product_order)
+        has_changes = True
+
+    if has_changes:
+        db.commit()
+
+
 def seed_catalog_if_empty():
     db = get_db()
     product_count = db.execute("SELECT COUNT(*) AS total FROM products").fetchone()["total"]
     payload = _load_seed_payload()
 
     if product_count > 0:
+        _ensure_seed_products_exist(payload)
         _ensure_catalog_skus(payload)
         ensure_default_admin()
         return
 
     for product_order, product in enumerate(payload["products"], start=1):
-        cursor = db.execute(
-            """
-            INSERT INTO products (slug, sku, name, family, category, accent, description, sort_order)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            """,
-            (
-                product["slug"],
-                _resolve_product_sku(product, product_order),
-                product["name"],
-                product["family"],
-                product["category"],
-                product["accent"],
-                product["description"],
-                product_order,
-            ),
-        )
-        product_id = cursor.lastrowid
-
-        for size_order, size in enumerate(product["sizes"], start=1):
-            db.execute(
-                """
-                INSERT INTO product_sizes (product_id, size_label, quantity, sort_order)
-                VALUES (?, ?, ?, ?)
-                """,
-                (product_id, size["label"], size["quantity"], size_order),
-            )
-
-        for media_order, media in enumerate(product["media"], start=1):
-            db.execute(
-                """
-                INSERT INTO product_media (product_id, public_token, media_type, label, file_path, sort_order)
-                VALUES (?, ?, ?, ?, ?, ?)
-                """,
-                (
-                    product_id,
-                    secrets.token_urlsafe(18),
-                    media["type"],
-                    media["label"],
-                    media["path"],
-                    media_order,
-                ),
-            )
+        _insert_seed_product(db, product, product_order)
 
     db.commit()
     ensure_default_admin()

@@ -1,4 +1,5 @@
 import secrets
+import time
 from functools import wraps
 
 from flask import current_app, flash, redirect, request, session, url_for
@@ -40,6 +41,35 @@ def authenticate_admin(username, password):
     if not check_password_hash(admin["password_hash"], password):
         return None
     return admin
+
+
+def get_login_lock_state():
+    attempt_count = int(session.get("login_attempt_count", 0))
+    blocked_until = int(session.get("login_block_until", 0))
+    now = int(time.time())
+    is_blocked = blocked_until > now
+    remaining_seconds = max(0, blocked_until - now)
+    return {
+        "attempt_count": attempt_count,
+        "blocked_until": blocked_until,
+        "is_blocked": is_blocked,
+        "remaining_seconds": remaining_seconds,
+    }
+
+
+def register_failed_login():
+    state = get_login_lock_state()
+    next_count = state["attempt_count"] + 1
+    session["login_attempt_count"] = next_count
+
+    if next_count >= current_app.config["LOGIN_MAX_ATTEMPTS"]:
+        session["login_block_until"] = int(time.time()) + current_app.config["LOGIN_BLOCK_SECONDS"]
+        session["login_attempt_count"] = 0
+
+
+def reset_login_attempts():
+    session.pop("login_attempt_count", None)
+    session.pop("login_block_until", None)
 
 
 def ensure_default_admin():

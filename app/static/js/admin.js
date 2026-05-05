@@ -30,4 +30,38 @@ function initAdminForms() {
     });
 }
 
-document.addEventListener("DOMContentLoaded", initAdminForms);
+function initAdminFolders() {
+    const folders = document.querySelectorAll(".admin-folder");
+    const productDetails = document.querySelectorAll(".admin-product");
+
+    folders.forEach((folder) => {
+        const toggle = folder.querySelector(".admin-folder__toggle");
+        const syncToggle = () => {
+            if (toggle) {
+                toggle.textContent = folder.open ? "Cerrar" : "Abrir";
+            }
+        };
+        syncToggle();
+        folder.addEventListener("toggle", syncToggle);
+    });
+
+    productDetails.forEach((details) => {
+        const summary = details.querySelector(".admin-product__summary");
+        if (!summary) {
+            return;
+        }
+
+        summary.addEventListener("click", () => {
+            productDetails.forEach((other) => {
+                if (other !== details) {
+                    other.removeAttribute("open");
+                }
+            });
+        });
+    });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    initAdminForms();
+    initAdminFolders();
+});

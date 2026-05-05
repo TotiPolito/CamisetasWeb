@@ -581,6 +581,12 @@ html[data-theme="dark"] .hero-panel {
     color: var(--text-soft);
 }
 
+.search-box__hint {
+    color: var(--text-soft);
+    font-size: 0.74rem;
+    font-weight: 600;
+}
+
 .filter-row {
     align-items: center;
 }
@@ -1079,6 +1085,79 @@ img.cover-media {
 
 .empty-state-card--compact {
     min-height: auto;
+}
+
+.admin-panel {
+    gap: 1.4rem;
+}
+
+.admin-folder-list {
+    display: grid;
+    gap: 1rem;
+}
+
+.admin-folder,
+.admin-product {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--surface-strong);
+    box-shadow: var(--shadow-soft);
+    overflow: hidden;
+}
+
+.admin-folder__summary,
+.admin-product__summary {
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.15rem;
+    cursor: pointer;
+}
+
+.admin-folder__summary::-webkit-details-marker,
+.admin-product__summary::-webkit-details-marker {
+    display: none;
+}
+
+.admin-folder__toggle {
+    min-width: 5rem;
+    text-align: right;
+    color: var(--text-soft);
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.admin-folder[open] .admin-folder__toggle::after,
+.admin-product[open] .admin-folder__toggle::after {
+    content: "";
+}
+
+.admin-folder__body,
+.admin-product__body {
+    display: grid;
+    gap: 1rem;
+    padding: 0 1.15rem 1.15rem;
+}
+
+.admin-product__summary-copy {
+    display: grid;
+    gap: 0.35rem;
+}
+
+.admin-product__summary-copy h3,
+.admin-folder__summary h3 {
+    margin: 0;
+    font-family: "Bebas Neue", sans-serif;
+    letter-spacing: 0.04em;
+    font-size: 2rem;
+    line-height: 0.95;
+}
+
+.admin-product__toolbar {
+    display: flex;
+    justify-content: flex-end;
 }
 
 .cart-layer {

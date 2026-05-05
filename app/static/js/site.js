@@ -179,14 +179,15 @@ function initCatalogFilters() {
     let activeFilter = "Todos";
 
     function applyFilters() {
-        const searchTerm = normalizeText(searchInput.value);
+        const rawTerm = normalizeText(searchInput.value).trim();
+        const searchTerm = rawTerm.length >= 3 ? rawTerm : "";
         let visibleCards = 0;
 
         cards.forEach((card) => {
             const cardCategory = normalizeText(card.dataset.category || "");
-            const cardSearch = normalizeText(card.dataset.search || "");
+            const cardTitle = normalizeText(card.dataset.title || "");
             const matchesFilter = activeFilter === "Todos" || cardCategory === normalizeText(activeFilter);
-            const matchesSearch = searchTerm === "" || cardSearch.includes(searchTerm);
+            const matchesSearch = searchTerm === "" || cardTitle.includes(searchTerm);
             const shouldShow = matchesFilter && matchesSearch;
             card.hidden = !shouldShow;
             if (shouldShow) {
