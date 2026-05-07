@@ -2,153 +2,379 @@
   "products": [
     {
       "slug": "dama-titular",
-      "sku": "TOT-DAM-001",
+      "sku": "DAM-001",
       "name": "Dama Titular",
       "family": "Dama",
       "category": "Dama",
+      "price_ars": 24000,
       "accent": "linear-gradient(135deg, #79a9dc, #c8def7)",
       "description": "Camiseta de estilo clasico en version dama, pensada para mostrar una opcion elegante, comoda y facil de combinar dentro del catalogo.",
       "sizes": [
-        { "label": "S", "quantity": 2 },
-        { "label": "M", "quantity": 3 },
-        { "label": "L", "quantity": 2 },
-        { "label": "XL", "quantity": 2 },
-        { "label": "XXL", "quantity": 1 }
+        {
+          "label": "S",
+          "quantity": 2
+        },
+        {
+          "label": "M",
+          "quantity": 3
+        },
+        {
+          "label": "L",
+          "quantity": 2
+        },
+        {
+          "label": "XL",
+          "quantity": 2
+        },
+        {
+          "label": "XXL",
+          "quantity": 1
+        }
       ],
       "media": [
-        { "type": "image", "label": "Vista frontal 1", "path": "Dama/Foto Camiseta de Dama de Frente (1).jpeg" },
-        { "type": "image", "label": "Vista frontal 2", "path": "Dama/Foto Camiseta de Dama de Frente (2).jpeg" },
-        { "type": "image", "label": "Vista frontal 3", "path": "Dama/Foto Camiseta de Dama de Frente (3).jpeg" },
-        { "type": "video", "label": "Video frente", "path": "Dama/Video Camiseta Dama de Frente.MOV" },
-        { "type": "video", "label": "Video atras", "path": "Dama/Video Camiseta Dama Atras.MOV" },
-        { "type": "video", "label": "Video detalle", "path": "Dama/Video Camiseta Dama.MOV" },
-        { "type": "video", "label": "Video general", "path": "Dama/Video Camisetas Damas.MOV" }
+        {
+          "type": "image",
+          "label": "Vista frontal 1",
+          "path": "Dama/Foto Camiseta de Dama de Frente (1).jpeg"
+        },
+        {
+          "type": "image",
+          "label": "Vista frontal 2",
+          "path": "Dama/Foto Camiseta de Dama de Frente (2).jpeg"
+        },
+        {
+          "type": "image",
+          "label": "Vista frontal 3",
+          "path": "Dama/Foto Camiseta de Dama de Frente (3).jpeg"
+        },
+        {
+          "type": "video",
+          "label": "Video frente",
+          "path": "Dama/Video Camiseta Dama de Frente.mp4"
+        },
+        {
+          "type": "video",
+          "label": "Video atras",
+          "path": "Dama/Video Camiseta Dama Atras.mp4"
+        },
+        {
+          "type": "video",
+          "label": "Video detalle",
+          "path": "Dama/Video Camiseta Dama.mp4"
+        },
+        {
+          "type": "video",
+          "label": "Video general",
+          "path": "Dama/Video Camisetas Damas.mp4"
+        }
       ]
     },
     {
       "slug": "hombre-titular",
-      "sku": "TOT-HOM-001",
+      "sku": "HOM-001",
       "name": "Hombre Titular",
       "family": "Hombre",
       "category": "Hombre",
+      "price_ars": 25000,
       "accent": "linear-gradient(135deg, #8da6de, #d9e2ff)",
       "description": "Version titular para hombre con presencia clasica y deportiva, ideal para quienes buscan una camiseta reconocible y facil de ofrecer.",
       "sizes": [
-        { "label": "S", "quantity": 3 },
-        { "label": "M", "quantity": 2 },
-        { "label": "L", "quantity": 3 },
-        { "label": "XL", "quantity": 3 },
-        { "label": "XXL", "quantity": 2 }
+        {
+          "label": "S",
+          "quantity": 3
+        },
+        {
+          "label": "M",
+          "quantity": 2
+        },
+        {
+          "label": "L",
+          "quantity": 3
+        },
+        {
+          "label": "XL",
+          "quantity": 3
+        },
+        {
+          "label": "XXL",
+          "quantity": 2
+        }
       ],
       "media": [
-        { "type": "image", "label": "Titular 1", "path": "Hombre Adulto/Titular/Camiseta Titular de Hombre (1).jpeg" },
-        { "type": "image", "label": "Titular 2", "path": "Hombre Adulto/Titular/Camiseta Titular de Hombre (2).jpeg" },
-        { "type": "image", "label": "Comparativa 1", "path": "Hombre Adulto/Ambas/Hombre Adulto ambas camisetas (1).jpeg" },
-        { "type": "image", "label": "Comparativa 2", "path": "Hombre Adulto/Ambas/Hombre Adulto ambas camisetas (2).jpeg" },
-        { "type": "video", "label": "Video general", "path": "Hombre Adulto/Video Camisetas Hombre.MOV" }
+        {
+          "type": "image",
+          "label": "Titular 1",
+          "path": "Hombre Adulto/Titular/Camiseta Titular de Hombre (1).jpeg"
+        },
+        {
+          "type": "image",
+          "label": "Titular 2",
+          "path": "Hombre Adulto/Titular/Camiseta Titular de Hombre (2).jpeg"
+        },
+        {
+          "type": "image",
+          "label": "Comparativa 1",
+          "path": "Hombre Adulto/Ambas/Hombre Adulto ambas camisetas (1).jpeg"
+        },
+        {
+          "type": "image",
+          "label": "Comparativa 2",
+          "path": "Hombre Adulto/Ambas/Hombre Adulto ambas camisetas (2).jpeg"
+        },
+        {
+          "type": "video",
+          "label": "Video general",
+          "path": "Hombre Adulto/Video Camisetas Hombre.mp4"
+        }
       ]
     },
     {
       "slug": "hombre-suplente",
-      "sku": "TOT-HOM-002",
+      "sku": "HOM-002",
       "name": "Hombre Suplente",
       "family": "Hombre",
       "category": "Hombre",
+      "price_ars": 25000,
       "accent": "linear-gradient(135deg, #4d4d58, #9c9ca9)",
       "description": "Modelo suplente para hombre con una estetica mas intensa, pensado para ampliar el catalogo con una alternativa llamativa y actual.",
       "sizes": [
-        { "label": "S", "quantity": 2 },
-        { "label": "M", "quantity": 2 },
-        { "label": "L", "quantity": 2 },
-        { "label": "XL", "quantity": 2 },
-        { "label": "XXL", "quantity": 1 }
+        {
+          "label": "S",
+          "quantity": 2
+        },
+        {
+          "label": "M",
+          "quantity": 2
+        },
+        {
+          "label": "L",
+          "quantity": 2
+        },
+        {
+          "label": "XL",
+          "quantity": 2
+        },
+        {
+          "label": "XXL",
+          "quantity": 1
+        }
       ],
       "media": [
-        { "type": "image", "label": "Suplente 1", "path": "Hombre Adulto/Suplente/Camiseta Suplente Adulto (1).jpeg" },
-        { "type": "image", "label": "Suplente 2", "path": "Hombre Adulto/Suplente/Camiseta Suplente Adulto (2).jpeg" },
-        { "type": "image", "label": "Suplente 3", "path": "Hombre Adulto/Suplente/Camiseta Suplente Adulto (3).jpeg" },
-        { "type": "image", "label": "Comparativa", "path": "Hombre Adulto/Ambas/Hombre Adulto ambas camisetas (1).jpeg" },
-        { "type": "video", "label": "Video general", "path": "Hombre Adulto/Video Camisetas Hombre.MOV" }
+        {
+          "type": "image",
+          "label": "Suplente 1",
+          "path": "Hombre Adulto/Suplente/Camiseta Suplente Adulto (1).jpeg"
+        },
+        {
+          "type": "image",
+          "label": "Suplente 2",
+          "path": "Hombre Adulto/Suplente/Camiseta Suplente Adulto (2).jpeg"
+        },
+        {
+          "type": "image",
+          "label": "Suplente 3",
+          "path": "Hombre Adulto/Suplente/Camiseta Suplente Adulto (3).jpeg"
+        },
+        {
+          "type": "image",
+          "label": "Comparativa",
+          "path": "Hombre Adulto/Ambas/Hombre Adulto ambas camisetas (1).jpeg"
+        },
+        {
+          "type": "video",
+          "label": "Video general",
+          "path": "Hombre Adulto/Video Camisetas Hombre.mp4"
+        }
       ]
     },
     {
       "slug": "nino-titular",
-      "sku": "TOT-NIN-001",
+      "sku": "NIN-001",
       "name": "Ni\u00f1o Titular",
       "family": "Ni\u00f1os",
       "category": "Ni\u00f1os",
+      "price_ars": 23000,
       "accent": "linear-gradient(135deg, #f6d364, #fff4b1)",
       "description": "Camiseta titular para chicos con una presentacion clasica, pensada para familias que buscan un modelo reconocible y facil de elegir.",
       "sizes": [
-        { "label": "8", "quantity": 1 },
-        { "label": "10", "quantity": 2 },
-        { "label": "12", "quantity": 2 },
-        { "label": "14", "quantity": 1 },
-        { "label": "16", "quantity": 1 }
+        {
+          "label": "8",
+          "quantity": 1
+        },
+        {
+          "label": "10",
+          "quantity": 2
+        },
+        {
+          "label": "12",
+          "quantity": 2
+        },
+        {
+          "label": "14",
+          "quantity": 1
+        },
+        {
+          "label": "16",
+          "quantity": 1
+        }
       ],
       "media": [
-        { "type": "image", "label": "Titular 1", "path": "Ni\u00f1os/Ni\u00f1o Titular (1).jpeg" },
-        { "type": "image", "label": "Titular 2", "path": "Ni\u00f1os/Ni\u00f1o Titular (2).jpeg" },
-        { "type": "image", "label": "Titular 3", "path": "Ni\u00f1os/Ni\u00f1o Titular (3).jpeg" },
-        { "type": "image", "label": "Titular 4", "path": "Ni\u00f1os/Ni\u00f1o Titular (4).jpeg" },
-        { "type": "image", "label": "Titular 5", "path": "Ni\u00f1os/Ni\u00f1o Titular (5).jpeg" },
-        { "type": "video", "label": "Video titular", "path": "Ni\u00f1os/Video ni\u00f1o titular.MOV" }
+        {
+          "type": "image",
+          "label": "Titular 1",
+          "path": "Ni\u00f1os/Ni\u00f1o Titular (1).jpeg"
+        },
+        {
+          "type": "image",
+          "label": "Titular 2",
+          "path": "Ni\u00f1os/Ni\u00f1o Titular (2).jpeg"
+        },
+        {
+          "type": "image",
+          "label": "Titular 3",
+          "path": "Ni\u00f1os/Ni\u00f1o Titular (3).jpeg"
+        },
+        {
+          "type": "image",
+          "label": "Titular 4",
+          "path": "Ni\u00f1os/Ni\u00f1o Titular (4).jpeg"
+        },
+        {
+          "type": "image",
+          "label": "Titular 5",
+          "path": "Ni\u00f1os/Ni\u00f1o Titular (5).jpeg"
+        },
+        {
+          "type": "video",
+          "label": "Video titular",
+          "path": "Ni\u00f1os/Video ni\u00f1o titular.mp4"
+        }
       ]
     },
     {
       "slug": "nino-suplente",
-      "sku": "TOT-NIN-002",
+      "sku": "NIN-002",
       "name": "Ni\u00f1o Suplente",
       "family": "Ni\u00f1os",
       "category": "Ni\u00f1os",
+      "price_ars": 23000,
       "accent": "linear-gradient(135deg, #edb183, #f9d1b5)",
       "description": "Version suplente para chicos con una propuesta visual distinta, util para sumar variedad y ofrecer una opcion mas moderna en el catalogo.",
       "sizes": [
-        { "label": "8", "quantity": 1 },
-        { "label": "10", "quantity": 1 },
-        { "label": "12", "quantity": 1 },
-        { "label": "14", "quantity": 1 },
-        { "label": "16", "quantity": 1 }
+        {
+          "label": "8",
+          "quantity": 1
+        },
+        {
+          "label": "10",
+          "quantity": 1
+        },
+        {
+          "label": "12",
+          "quantity": 1
+        },
+        {
+          "label": "14",
+          "quantity": 1
+        },
+        {
+          "label": "16",
+          "quantity": 1
+        }
       ],
       "media": [
-        { "type": "image", "label": "Suplente 1", "path": "Ni\u00f1os/Suplente Ni\u00f1o (1).jpeg" },
-        { "type": "image", "label": "Suplente 2", "path": "Ni\u00f1os/Suplente Ni\u00f1o (2).jpeg" },
-        { "type": "image", "label": "Suplente 3", "path": "Ni\u00f1os/Suplente Ni\u00f1o (3).jpeg" },
-        { "type": "image", "label": "Suplente 4", "path": "Ni\u00f1os/Suplente Ni\u00f1o (4).jpeg" },
-        { "type": "image", "label": "Suplente 5", "path": "Ni\u00f1os/Suplente Ni\u00f1o (5).jpeg" },
-        { "type": "video", "label": "Video 1", "path": "Ni\u00f1os/Video Camiseta ni\u00f1o suplente (1).MOV" },
-        { "type": "video", "label": "Video 2", "path": "Ni\u00f1os/Video Camiseta ni\u00f1o suplente (2).MOV" },
-        { "type": "video", "label": "Video 3", "path": "Ni\u00f1os/Video Camiseta ni\u00f1o suplente (3).MOV" }
+        {
+          "type": "image",
+          "label": "Suplente 1",
+          "path": "Ni\u00f1os/Suplente Ni\u00f1o (1).jpeg"
+        },
+        {
+          "type": "image",
+          "label": "Suplente 2",
+          "path": "Ni\u00f1os/Suplente Ni\u00f1o (2).jpeg"
+        },
+        {
+          "type": "image",
+          "label": "Suplente 3",
+          "path": "Ni\u00f1os/Suplente Ni\u00f1o (3).jpeg"
+        },
+        {
+          "type": "image",
+          "label": "Suplente 4",
+          "path": "Ni\u00f1os/Suplente Ni\u00f1o (4).jpeg"
+        },
+        {
+          "type": "image",
+          "label": "Suplente 5",
+          "path": "Ni\u00f1os/Suplente Ni\u00f1o (5).jpeg"
+        },
+        {
+          "type": "video",
+          "label": "Video 1",
+          "path": "Ni\u00f1os/Video Camiseta ni\u00f1o suplente (1).mp4"
+        },
+        {
+          "type": "video",
+          "label": "Video 2",
+          "path": "Ni\u00f1os/Video Camiseta ni\u00f1o suplente (2).mp4"
+        },
+        {
+          "type": "video",
+          "label": "Video 3",
+          "path": "Ni\u00f1os/Video Camiseta ni\u00f1o suplente (3).mp4"
+        }
       ]
     },
     {
       "slug": "nino-dibu",
-      "sku": "TOT-NIN-003",
+      "sku": "NIN-003",
       "name": "Ni\u00f1o Dibu",
       "family": "Ni\u00f1os",
       "category": "Ni\u00f1os",
+      "price_ars": 23000,
       "accent": "linear-gradient(135deg, #9d99a0, #d9d6da)",
       "description": "Modelo infantil de estilo especial que destaca por su presencia en video, pensado para mostrar el dise\u00f1o en movimiento sin exponer fotos descargables.",
       "sizes": [
-        { "label": "8", "quantity": 1 },
-        { "label": "14", "quantity": 1 },
-        { "label": "16", "quantity": 1 }
+        {
+          "label": "8",
+          "quantity": 1
+        },
+        {
+          "label": "14",
+          "quantity": 1
+        },
+        {
+          "label": "16",
+          "quantity": 1
+        }
       ],
       "media": [
-        { "type": "video", "label": "Video 1", "path": "Ni\u00f1os/Dibu Ni\u00f1o (1).MOV" },
-        { "type": "video", "label": "Video 2", "path": "Ni\u00f1os/Dibu Ni\u00f1o (2).MOV" }
+        {
+          "type": "video",
+          "label": "Video 1",
+          "path": "Ni\u00f1os/Dibu Ni\u00f1o (1).mp4"
+        },
+        {
+          "type": "video",
+          "label": "Video 2",
+          "path": "Ni\u00f1os/Dibu Ni\u00f1o (2).mp4"
+        }
       ]
     },
     {
       "slug": "inter-miami",
-      "sku": "TOT-ESP-001",
+      "sku": "ESP-001",
       "name": "Inter Miami",
       "family": "Especial",
       "category": "Especial",
+      "price_ars": 25000,
       "accent": "linear-gradient(135deg, #7b2aa7, #ff39c6)",
       "description": "Camiseta especial cargada en catalogo para reservar su lugar y mostrar disponibilidad, aunque por ahora todavia no tenga material visual asociado.",
       "sizes": [
-        { "label": "XL", "quantity": 1 }
+        {
+          "label": "XL",
+          "quantity": 1
+        }
       ],
       "media": []
     }

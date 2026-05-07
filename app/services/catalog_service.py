@@ -24,7 +24,7 @@ def _load_seed_payload():
 
 def _build_fallback_sku(product, order):
     prefix = SKU_PREFIXES.get(product.get("category"), "CAT")
-    return f"TOT-{prefix}-{order:03d}"
+    return f"{prefix}-{order:03d}"
 
 
 def _resolve_product_sku(product, order):
@@ -54,9 +54,6 @@ def _ensure_catalog_skus(payload):
     has_changes = False
 
     for order, row in enumerate(rows, start=1):
-        if row["sku"]:
-            continue
-
         sku = sku_by_slug.get(row["slug"])
         if not sku:
             sku = _build_fallback_sku(
@@ -64,7 +61,45 @@ def _ensure_catalog_skus(payload):
                 fallback_orders.get(row["slug"], order),
             )
 
+        current_sku = str(row["sku"] or "").strip()
+        normalized_current = current_sku.removeprefix("TOT-")
+        if normalized_current == sku:
+            continue
+
         db.execute("UPDATE products SET sku = ? WHERE id = ?", (sku, row["id"]))
+        has_changes = True
+
+    if has_changes:
+        db.commit()
+
+
+def _ensure_catalog_prices(payload):
+    db = get_db()
+    price_by_slug = {
+        product["slug"]: int(product.get("price_ars") or 0)
+        for product in payload["products"]
+    }
+    rows = db.execute(
+        """
+        SELECT id, slug, price_ars
+        FROM products
+        ORDER BY sort_order, id
+        """
+    ).fetchall()
+
+    has_changes = False
+
+    for row in rows:
+        desired_price = price_by_slug.get(row["slug"])
+        if desired_price is None:
+            continue
+        if int(row["price_ars"] or 0) > 0:
+            continue
+
+        db.execute(
+            "UPDATE products SET price_ars = ? WHERE id = ?",
+            (desired_price, row["id"]),
+        )
         has_changes = True
 
     if has_changes:
@@ -74,8 +109,8 @@ def _ensure_catalog_skus(payload):
 def _insert_seed_product(db, product, product_order):
     cursor = db.execute(
         """
-        INSERT INTO products (slug, sku, name, family, category, accent, description, sort_order)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO products (slug, sku, name, family, category, price_ars, accent, description, sort_order)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (
             product["slug"],
@@ -83,6 +118,7 @@ def _insert_seed_product(db, product, product_order):
             product["name"],
             product["family"],
             product["category"],
+            int(product.get("price_ars") or 0),
             product["accent"],
             product["description"],
             product_order,
@@ -142,6 +178,7 @@ def seed_catalog_if_empty():
     if product_count > 0:
         _ensure_seed_products_exist(payload)
         _ensure_catalog_skus(payload)
+        _ensure_catalog_prices(payload)
         ensure_default_admin()
         return
 

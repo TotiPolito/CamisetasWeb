@@ -80,8 +80,31 @@ function initColorPickers() {
     });
 }
 
+function initDeleteConfirmations() {
+    const deleteForms = document.querySelectorAll("[data-product-delete]");
+
+    deleteForms.forEach((form) => {
+        form.addEventListener("submit", (event) => {
+            const productName = form.dataset.productName || "este modelo";
+            const productSku = form.dataset.productSku || "Sin SKU";
+            const productCategory = form.dataset.productCategory || "Sin categoria";
+            const confirmationMessage = [
+                `Estas seguro que deseas borrar la camiseta ${productName}?`,
+                "",
+                `Categoria: ${productCategory}`,
+                `SKU: ${productSku}`,
+            ].join("\n");
+
+            if (!window.confirm(confirmationMessage)) {
+                event.preventDefault();
+            }
+        });
+    });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     initAdminForms();
     initAdminFolders();
     initColorPickers();
+    initDeleteConfirmations();
 });

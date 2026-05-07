@@ -10,6 +10,7 @@
                 <p class="eyebrow">Panel admin</p>
                 <h1>Gestionar catalogo</h1>
             </div>
+            <a class="button button--secondary" href="{{ url_for('admin.quick_stock') }}">Stock rapido</a>
         </div>
 
         <form class="admin-form admin-form--create" method="post" action="{{ url_for('admin.create_product_action') }}" data-admin-form>
@@ -22,7 +23,7 @@
                 </label>
                 <label class="field">
                     <span>SKU</span>
-                    <input type="text" name="sku" placeholder="TOT-HOM-003">
+                    <input type="text" name="sku" placeholder="HOM-003">
                 </label>
                 <label class="field">
                     <span>Slug</span>
@@ -41,6 +42,10 @@
                 <label class="field">
                     <span>Familia</span>
                     <input type="text" name="family" placeholder="Hombre">
+                </label>
+                <label class="field">
+                    <span>Precio</span>
+                    <input type="text" name="price_ars" placeholder="25000" inputmode="numeric">
                 </label>
                 <label class="field field--color">
                     <span>Color principal</span>
@@ -91,6 +96,7 @@
                                         <p class="product-code">SKU {{ product.sku }}</p>
                                     </div>
                                     <div class="admin-card__summary">
+                                        <span>{{ product.formatted_price }}</span>
                                         <span>{{ product.total_stock }} unidades</span>
                                         <span>{{ product.image_count }} fotos | {{ product.video_count }} videos</span>
                                     </div>
@@ -129,6 +135,10 @@
                                             <label class="field">
                                                 <span>Familia</span>
                                                 <input type="text" name="family" value="{{ product.family }}">
+                                            </label>
+                                            <label class="field">
+                                                <span>Precio</span>
+                                                <input type="text" name="price_ars" value="{{ product.price_ars }}" inputmode="numeric">
                                             </label>
                                             <label class="field field--color">
                                                 <span>Color principal</span>
@@ -172,7 +182,7 @@
                                                     <article class="admin-media-card">
                                                         <div class="admin-media-card__frame">
                                                             {% if media.kind == "video" %}
-                                                                <video class="cover-media" controls playsinline preload="none">
+                                                                <video class="cover-media" controls playsinline preload="none" muted>
                                                                     <source src="{{ url_for('public.media', token=media.token) }}">
                                                                 </video>
                                                             {% else %}
@@ -209,7 +219,15 @@
                                         </form>
                                     </section>
 
-                                    <form class="admin-delete-form" method="post" action="{{ url_for('admin.delete_product_action', product_id=product.id) }}">
+                                    <form
+                                        class="admin-delete-form"
+                                        method="post"
+                                        action="{{ url_for('admin.delete_product_action', product_id=product.id) }}"
+                                        data-product-delete
+                                        data-product-name="{{ product.name }}"
+                                        data-product-sku="{{ product.sku or 'Sin SKU' }}"
+                                        data-product-category="{{ product.category_label }}"
+                                    >
                                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                         <button class="button button--danger" type="submit">Eliminar modelo completo</button>
                                     </form>

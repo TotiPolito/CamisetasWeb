@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Stock rapido{% endblock %}
+
+{% block content %}
+<main class="page-grid">
+    <section class="panel admin-panel">
+        <div class="panel__header">
+            <div>
+                <p class="eyebrow">Panel admin</p>
+                <h1>Stock rapido</h1>
+            </div>
+            <a class="button button--secondary" href="{{ url_for('admin.dashboard') }}">Volver al panel</a>
+        </div>
+
+        <div class="quick-stock-list">
+            {% for group in grouped_products %}
+                <section class="quick-stock-group">
+                    <div class="quick-stock-group__head">
+                        <p class="eyebrow">{{ group.name }}</p>
+                        <h2>{{ group.products|length }} modelo{% if group.products|length != 1 %}s{% endif %}</h2>
+                    </div>
+
+                    <div class="quick-stock-grid">
+                        {% for product in group.products %}
+                            <form
+                                class="quick-stock-card"
+                                id="quick-stock-{{ product.id }}"
+                                method="post"
+                                action="{{ url_for('admin.update_quick_stock', product_id=product.id) }}"
+                                data-admin-form
+                            >
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                                <div class="quick-stock-card__head">
+                                    <div>
+                                        <p class="admin-card__category">{{ product.category_label }}</p>
+                                        <h3>{{ product.name }}</h3>
+                                        <p class="product-code">{{ product.sku }}</p>
+                                    </div>
+                                    <a class="nav-link" href="{{ url_for('public.product_detail', slug=product.slug) }}" target="_blank" rel="noreferrer">Ver publica</a>
+                                </div>
+
+                                <label class="field">
+                                    <span>Precio</span>
+                                    <input type="text" name="price_ars" value="{{ product.price_ars }}" inputmode="numeric">
+                                </label>
+
+                                <div class="quick-stock-sizes">
+                                    {% for size in product.display_sizes %}
+                                        <label class="field quick-stock-sizes__field">
+                                            <span>{{ size.label }}</span>
+                                            <input type="number" min="0" step="1" name="size_{{ size.field_key }}" value="{{ size.quantity }}" required>
+                                        </label>
+                                    {% endfor %}
+                                </div>
+
+                                <div class="admin-form__actions">
+                                    <button class="button button--primary" type="submit" data-submit-label>Guardar stock</button>
+                                </div>
+                            </form>
+                        {% endfor %}
+                    </div>
+                </section>
+            {% endfor %}
+        </div>
+    </section>
+</main>
+{% endblock %}
+
+{% block page_scripts %}
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}

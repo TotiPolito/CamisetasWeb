@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS products (
     name TEXT NOT NULL,
     family TEXT NOT NULL,
     category TEXT NOT NULL,
+    price_ars INTEGER NOT NULL DEFAULT 0,
     accent TEXT NOT NULL,
     description TEXT NOT NULL,
     sort_order INTEGER NOT NULL DEFAULT 0,
@@ -74,6 +75,8 @@ def initialize_database(app):
         }
         if "sku" not in existing_columns:
             connection.execute("ALTER TABLE products ADD COLUMN sku TEXT")
+        if "price_ars" not in existing_columns:
+            connection.execute("ALTER TABLE products ADD COLUMN price_ars INTEGER NOT NULL DEFAULT 0")
         connection.execute(
             """
             CREATE UNIQUE INDEX IF NOT EXISTS idx_products_sku

@@ -176,15 +176,27 @@ html[data-theme="dark"] .admin-card {
     gap: 1rem;
     padding: 0.2rem 0 1rem;
     border: 0;
-    border-bottom: 1px solid var(--line);
     border-radius: 0;
     background: transparent;
     box-shadow: none;
     backdrop-filter: none;
+    isolation: isolate;
 }
 
 .topbar--catalog {
     align-items: center;
+}
+
+.topbar::before,
+.topbar::after {
+    content: none;
+}
+
+html[data-theme="dark"] .topbar {
+    border: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    outline: 0;
 }
 
 .brand {
@@ -382,7 +394,7 @@ html[data-theme="dark"] .icon-button--theme {
 }
 
 .page-grid {
-    margin-top: 1.2rem;
+    margin-top: 0.85rem;
 }
 
 .flash {
@@ -850,6 +862,23 @@ img.cover-media {
     letter-spacing: 0.03em;
 }
 
+.product-card__price,
+.product-price {
+    margin: 0;
+    color: var(--text);
+    font-family: "Bebas Neue", sans-serif;
+    letter-spacing: 0.04em;
+    line-height: 0.95;
+}
+
+.product-card__price {
+    font-size: 1.9rem;
+}
+
+.product-price--detail {
+    font-size: 2.6rem;
+}
+
 .product-card__hint {
     font-size: 0.88rem;
 }
@@ -1035,6 +1064,18 @@ img.cover-media {
     opacity: 0.55;
 }
 
+.button--share {
+    gap: 0.5rem;
+    width: auto;
+    min-width: 0;
+    padding-inline: 0.95rem;
+}
+
+.button--share.is-success {
+    color: var(--success);
+    border-color: rgba(33, 154, 139, 0.22);
+}
+
 .button.is-disabled {
     pointer-events: none;
 }
@@ -1146,6 +1187,56 @@ img.cover-media {
 
 .admin-grid {
     grid-template-columns: 1fr;
+}
+
+.quick-stock-list,
+.quick-stock-group,
+.quick-stock-card {
+    display: grid;
+    gap: 1rem;
+}
+
+.quick-stock-group__head h2,
+.quick-stock-card h3 {
+    margin: 0;
+    font-family: "Bebas Neue", sans-serif;
+    letter-spacing: 0.04em;
+    line-height: 0.95;
+}
+
+.quick-stock-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+.quick-stock-card {
+    padding: 1rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--surface-strong);
+    box-shadow: var(--shadow-soft);
+}
+
+.quick-stock-card__head {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    align-items: start;
+}
+
+.quick-stock-sizes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
+    gap: 0.75rem;
+}
+
+.quick-stock-sizes__field span {
+    text-align: center;
+}
+
+.quick-stock-sizes__field input {
+    text-align: center;
 }
 
 .admin-card {
@@ -1460,6 +1551,10 @@ img.cover-media {
     --icon: url("/static/icons/instagram.svg");
 }
 
+.icon--share {
+    --icon: url("/static/icons/share.svg");
+}
+
 .site-footer {
     display: grid;
     gap: 0.85rem;
@@ -1654,6 +1749,10 @@ img.cover-media {
 
     .icon-button--theme {
         width: 3rem;
+    }
+
+    .quick-stock-grid {
+        grid-template-columns: 1fr;
     }
 
     .catalog-toolbar,

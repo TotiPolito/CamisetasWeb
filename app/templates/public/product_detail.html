@@ -8,6 +8,7 @@
         <div class="product-hero__copy">
             <p class="eyebrow">{{ product.category_label }} | {{ product.family }}</p>
             <h1>{{ product.name }}</h1>
+            <p class="product-price product-price--detail">{{ product.formatted_price }}</p>
             <p class="product-code product-code--detail">SKU {{ product.sku }}</p>
 
             {% if is_admin_logged_in %}
@@ -73,6 +74,15 @@
             <div class="product-hero__actions">
                 <a class="button button--secondary" href="{{ url_for('public.home') }}">Volver al catalogo</a>
                 <button class="button button--secondary" type="button" data-cart-toggle>Ver carrito</button>
+                <button
+                    class="button button--secondary button--share"
+                    type="button"
+                    data-share-link
+                    data-share-url="{{ url_for('public.product_detail', slug=product.slug) }}"
+                >
+                    <span class="ui-icon icon--share" aria-hidden="true"></span>
+                    <span data-share-label>Compartir</span>
+                </button>
                 {% if is_admin_logged_in %}
                     <a class="button button--secondary" href="{{ url_for('admin.dashboard') }}#product-{{ product.id }}">Editar producto</a>
                 {% endif %}
@@ -82,7 +92,7 @@
         <aside class="product-hero__preview{% if product.preview_media and product.preview_media.kind == 'video' %} product-hero__preview--video{% endif %} media-protect" data-protected-media>
             {% if product.preview_media %}
                 {% if product.preview_media.kind == "video" %}
-                    <video class="cover-media" controls controlsList="nodownload noplaybackrate noremoteplayback" disablePictureInPicture playsinline preload="none">
+                    <video class="cover-media" controls controlsList="nodownload noplaybackrate noremoteplayback" disablePictureInPicture playsinline preload="none" muted>
                         <source src="{{ url_for('public.media', token=product.preview_media.token) }}">
                     </video>
                 {% else %}
@@ -112,7 +122,7 @@
                 {% for media in product.videos %}
                     <article class="media-card media-card--video media-protect" data-protected-media>
                         <div class="media-card__frame">
-                            <video class="cover-media" controls controlsList="nodownload noplaybackrate noremoteplayback" disablePictureInPicture playsinline preload="none">
+                            <video class="cover-media" controls controlsList="nodownload noplaybackrate noremoteplayback" disablePictureInPicture playsinline preload="none" muted>
                                 <source src="{{ url_for('public.media', token=media.token) }}">
                             </video>
                         </div>

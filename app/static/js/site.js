@@ -256,6 +256,56 @@ function initCatalogFilters() {
     applyFilters();
 }
 
+function initShareLinks() {
+    const shareButtons = document.querySelectorAll("[data-share-link]");
+
+    async function copyToClipboard(value) {
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+            await navigator.clipboard.writeText(value);
+            return;
+        }
+
+        const helper = document.createElement("input");
+        helper.value = value;
+        document.body.appendChild(helper);
+        helper.select();
+        document.execCommand("copy");
+        helper.remove();
+    }
+
+    shareButtons.forEach((button) => {
+        button.addEventListener("click", async () => {
+            const sharePath = button.dataset.shareUrl || "/";
+            const shareUrl = new URL(sharePath, window.location.origin).toString();
+            const label = button.querySelector("[data-share-label]");
+            const defaultText = label ? label.textContent : "Compartir";
+
+            try {
+                await copyToClipboard(shareUrl);
+                if (label) {
+                    label.textContent = "Link copiado";
+                }
+                button.classList.add("is-success");
+                window.setTimeout(() => {
+                    if (label) {
+                        label.textContent = defaultText;
+                    }
+                    button.classList.remove("is-success");
+                }, 1800);
+            } catch (_error) {
+                if (label) {
+                    label.textContent = "No se pudo copiar";
+                }
+                window.setTimeout(() => {
+                    if (label) {
+                        label.textContent = defaultText;
+                    }
+                }, 1800);
+            }
+        });
+    });
+}
+
 function initMediaProtection() {
     const protectedBlocks = document.querySelectorAll("[data-protected-media]");
 
@@ -444,6 +494,7 @@ function initProductPurchase() {
 
 document.addEventListener("DOMContentLoaded", () => {
     initCatalogFilters();
+    initShareLinks();
     initMediaProtection();
     initThemeToggle();
     initCart();

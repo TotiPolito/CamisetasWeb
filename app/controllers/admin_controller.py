@@ -13,6 +13,7 @@ from app.models.product_model import (
     fetch_product_by_id,
     normalize_category_label,
     update_product_details_and_stock,
+    update_product_price_and_stock,
 )
 from app.services.auth_service import login_required, validate_csrf_token
 
@@ -55,10 +56,7 @@ def _redirect_to_product(product_id):
     return redirect(url_for("admin.dashboard") + f"#product-{product_id}")
 
 
-@admin_bp.get("/admin")
-@login_required
-def dashboard():
-    products = fetch_all_products()
+def _group_products(products):
     grouped_products = []
 
     for category_name in ADMIN_CATEGORY_ORDER:
@@ -66,11 +64,31 @@ def dashboard():
         if category_products:
             grouped_products.append({"name": category_name, "products": category_products})
 
+    return grouped_products
+
+
+@admin_bp.get("/admin")
+@login_required
+def dashboard():
+    products = fetch_all_products()
+
     return render_template(
         "admin/dashboard.html",
         page_name="admin",
         products=products,
-        grouped_products=grouped_products,
+        grouped_products=_group_products(products),
+    )
+
+
+@admin_bp.get("/admin/stock-rapido")
+@login_required
+def quick_stock():
+    products = fetch_all_products()
+    return render_template(
+        "admin/quick_stock.html",
+        page_name="admin",
+        products=products,
+        grouped_products=_group_products(products),
     )
 
 
@@ -95,6 +113,7 @@ def create_product_action():
         family=request.form.get("family", ""),
         description=request.form.get("description", ""),
         accent=request.form.get("accent_color", "") or request.form.get("accent", ""),
+        price_ars=request.form.get("price_ars", "0"),
     )
 
     try:
@@ -132,6 +151,7 @@ def update_product(product_id):
         family=request.form.get("family", ""),
         description=request.form.get("description", ""),
         accent=request.form.get("accent_color", "") or request.form.get("accent", ""),
+        price_ars=request.form.get("price_ars", "0"),
     )
 
     try:
@@ -146,6 +166,27 @@ def update_product(product_id):
 
     flash(f"Producto actualizado: {payload['name']}.", "success")
     return _redirect_to_product(product_id)
+
+
+@admin_bp.post("/admin/stock-rapido/<int:product_id>")
+@login_required
+def update_quick_stock(product_id):
+    if not validate_csrf_token(request.form.get("csrf_token")):
+        abort(400)
+
+    product = fetch_product_by_id(product_id)
+    if not product:
+        abort(404)
+
+    try:
+        size_updates = _build_size_updates(product, product["category"])
+        update_product_price_and_stock(product_id, request.form.get("price_ars", "0"), size_updates)
+    except ValueError as error:
+        flash(str(error), "error")
+        return redirect(url_for("admin.quick_stock") + f"#quick-stock-{product_id}")
+
+    flash(f"Stock rapido actualizado: {product['name']}.", "success")
+    return redirect(url_for("admin.quick_stock") + f"#quick-stock-{product_id}")
 
 
 @admin_bp.post("/admin/product/<int:product_id>/media")

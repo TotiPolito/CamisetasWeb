@@ -126,6 +126,7 @@
                         </div>
                         <div class="product-card__copy">
                             <h3>{{ product.name }}</h3>
+                            <p class="product-card__price">{{ product.formatted_price }}</p>
                             <p class="product-card__hint">Toca la foto para ver el detalle.</p>
                         </div>
                     </div>
@@ -138,6 +139,7 @@
                             </span>
                         {% endfor %}
                     </div>
+
                 </article>
             {% endfor %}
         </div>

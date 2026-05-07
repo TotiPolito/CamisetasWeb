@@ -98,6 +98,27 @@ def _build_accent_style(accent_value, category_label):
     return accent_text or DEFAULT_ACCENTS.get(category_label, DEFAULT_ACCENTS["Otros"])
 
 
+def _normalize_price(price_value):
+    raw_value = str(price_value or "").strip().replace(".", "").replace(",", "")
+    if not raw_value:
+        return 0
+    return max(0, int(raw_value))
+
+
+def _normalize_sku(sku_value):
+    raw_value = str(sku_value or "").strip().upper()
+    if not raw_value:
+        return None
+    if raw_value.startswith("TOT-"):
+        raw_value = raw_value[4:]
+    return raw_value or None
+
+
+def format_price_ars(price_value):
+    normalized = _normalize_price(price_value)
+    return "$" + f"{normalized:,}".replace(",", ".")
+
+
 def _guess_mime_type(file_path, media_type):
     path = Path(file_path)
     if media_type == "video":
@@ -284,6 +305,8 @@ def _serialize_product(row, sizes, media):
         "category": row["category"],
         "category_label": category_label,
         "filter_group": category_label,
+        "price_ars": row["price_ars"],
+        "formatted_price": format_price_ars(row["price_ars"]),
         "accent": row["accent"],
         "accent_color": accent_color,
         "description": row["description"],
@@ -325,7 +348,7 @@ def fetch_all_products():
     db = get_db()
     rows = db.execute(
         """
-        SELECT id, slug, sku, name, family, category, accent, description, sort_order
+        SELECT id, slug, sku, name, family, category, price_ars, accent, description, sort_order
         FROM products
         ORDER BY sort_order, id
         """
@@ -337,7 +360,7 @@ def fetch_product_by_slug(slug):
     db = get_db()
     row = db.execute(
         """
-        SELECT id, slug, sku, name, family, category, accent, description, sort_order
+        SELECT id, slug, sku, name, family, category, price_ars, accent, description, sort_order
         FROM products
         WHERE slug = ?
         """,
@@ -350,7 +373,7 @@ def fetch_product_by_id(product_id):
     db = get_db()
     row = db.execute(
         """
-        SELECT id, slug, sku, name, family, category, accent, description, sort_order
+        SELECT id, slug, sku, name, family, category, price_ars, accent, description, sort_order
         FROM products
         WHERE id = ?
         """,
@@ -404,7 +427,7 @@ def update_product_details_and_stock(product_id, product_payload, size_updates):
         db.execute(
             """
             UPDATE products
-            SET slug = ?, sku = ?, name = ?, family = ?, category = ?, accent = ?, description = ?
+            SET slug = ?, sku = ?, name = ?, family = ?, category = ?, price_ars = ?, accent = ?, description = ?
             WHERE id = ?
             """,
             (
@@ -413,6 +436,7 @@ def update_product_details_and_stock(product_id, product_payload, size_updates):
                 product_payload["name"],
                 product_payload["family"],
                 product_payload["category"],
+                product_payload["price_ars"],
                 product_payload["accent"],
                 product_payload["description"],
                 product_id,
@@ -462,8 +486,8 @@ def create_product(product_payload):
     sort_order = _next_product_sort_order(db)
     cursor = db.execute(
         """
-        INSERT INTO products (slug, sku, name, family, category, accent, description, sort_order)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO products (slug, sku, name, family, category, price_ars, accent, description, sort_order)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (
             product_payload["slug"],
@@ -471,6 +495,7 @@ def create_product(product_payload):
             product_payload["name"],
             product_payload["family"],
             product_payload["category"],
+            product_payload["price_ars"],
             product_payload["accent"],
             product_payload["description"],
             sort_order,
@@ -564,13 +589,62 @@ def delete_product(product_id):
     return product
 
 
-def build_product_payload(name, category, sku="", slug="", family="", description="", accent=""):
+def update_product_price_and_stock(product_id, price_ars, size_updates):
+    db = get_db()
+    db.execute("BEGIN")
+
+    try:
+        db.execute(
+            "UPDATE products SET price_ars = ? WHERE id = ?",
+            (_normalize_price(price_ars), product_id),
+        )
+
+        existing_sizes = {
+            row["size_label"]: {"id": row["id"]}
+            for row in db.execute(
+                """
+                SELECT id, size_label
+                FROM product_sizes
+                WHERE product_id = ?
+                """,
+                (product_id,),
+            ).fetchall()
+        }
+
+        for label, payload in size_updates.items():
+            quantity = payload["quantity"]
+            sort_order = payload["sort_order"]
+            existing = existing_sizes.get(label)
+
+            if existing:
+                db.execute(
+                    "UPDATE product_sizes SET quantity = ?, sort_order = ? WHERE id = ?",
+                    (quantity, sort_order, existing["id"]),
+                )
+                continue
+
+            db.execute(
+                """
+                INSERT INTO product_sizes (product_id, size_label, quantity, sort_order)
+                VALUES (?, ?, ?, ?)
+                """,
+                (product_id, label, quantity, sort_order),
+            )
+
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise
+
+
+def build_product_payload(name, category, sku="", slug="", family="", description="", accent="", price_ars=0):
     normalized_category = normalize_category_label(category)
     resolved_name = str(name or "").strip()
     resolved_slug = build_slug(slug or resolved_name)
     resolved_family = str(family or normalized_category).strip() or normalized_category
-    resolved_sku = str(sku or "").strip() or None
+    resolved_sku = _normalize_sku(sku)
     resolved_description = str(description or "").strip()
+    resolved_price = _normalize_price(price_ars)
     resolved_accent = _build_accent_style(accent, normalized_category)
 
     return {
@@ -579,6 +653,7 @@ def build_product_payload(name, category, sku="", slug="", family="", descriptio
         "name": resolved_name,
         "family": resolved_family,
         "category": normalized_category,
+        "price_ars": resolved_price,
         "accent": resolved_accent,
         "description": resolved_description,
     }
